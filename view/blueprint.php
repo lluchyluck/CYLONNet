@@ -2,6 +2,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="../assets/images/cylonPNG.png" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYLONNet - Cybersecurity CTF Platform</title>
     <link rel="stylesheet" href="../assets/css/style.css">
@@ -11,11 +12,11 @@
     <canvas id="starfield"></canvas>
     <div class="header">
         <div class="profile" id="profile">
-            <img src="https://cylonnet.bsg/images/default-profile.svg" alt="Profile picture" class="profile-pic"
-                id="profile-pic">
+            <img src="https://cylonnet.bsg/images/default-profile.svg" alt="Profile picture" class="profile-pic" id="profile-pic">
             <span id="username">Guest</span>
         </div>
-        <div id="animated-text">
+        <div id="animated-text" class="title-logo">
+        <img src="../assets/images/cylonPNG.png" style="width: 90px;">
         <h1>CYLONNet</h1>
         </div>
     </div>
@@ -37,7 +38,7 @@
                     height="50">Register</a>
         </nav>
         <main class="content" id="content">
-            <!-- Content will be dynamically loaded here -->
+            <!-- El contenido se carga  dinamicamente -->
         </main>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
