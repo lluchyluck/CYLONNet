@@ -28,9 +28,9 @@
     </div>
     <div class="main-container">
         <nav class="menu">
-            <a data-page="home"><img src="https://cylonnet.bsg/images/home.svg" alt="Home icon" width="50"
+            <a data-page="home"><img src="../assets/images/basecyclon.png" alt="Home icon" width="50"
                     height="50">Home</a>
-            <a data-page="missions"><img src="https://cylonnet.bsg/images/mission.svg" alt="Missions icon" width="50"
+            <a data-page="missions"><img src="../assets/images/raider.png" alt="Missions icon" width="50"
                     height="50">Missions</a>
             <a data-page="login"><img src="https://cylonnet.bsg/images/login.svg" alt="Login icon" width="50"
                     height="50">Login</a>
