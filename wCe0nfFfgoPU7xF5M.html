@@ -1,0 +1,506 @@
+<html><head><base href="https://cylonnet.bsg/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYLONNet - Cybersecurity CTF Platform</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Courier New', monospace;
+      background-color: black;
+      color: #FFD700;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #FFD700;
+      z-index: 1000;
+    }
+    .profile {
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+    }
+    .profile-pic {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+      border: 2px solid #FFD700;
+    }
+    .main-container {
+      display: flex;
+      flex-grow: 1;
+    }
+    .menu {
+      width: 300px;
+      border-right: 1px solid #FFD700;
+      padding: 20px;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .menu a {
+      display: flex;
+      align-items: center;
+      color: #FFD700;
+      text-decoration: none;
+      margin-bottom: 30px;
+      transition: all 0.3s;
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .menu a:hover {
+      color: white;
+      transform: translateX(10px);
+    }
+    .menu img {
+      width: 50px;
+      height: 50px;
+      margin-right: 20px;
+      transition: all 0.3s;
+      filter: brightness(0) saturate(100%) invert(79%) sepia(72%) saturate(552%) hue-rotate(359deg) brightness(101%) contrast(107%);
+    }
+    .menu a:hover img {
+      filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(59deg) brightness(108%) contrast(108%);
+      transform: scale(1.1);
+    }
+    .content {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .box {
+      border: 1px solid #FFD700;
+      padding: 30px;
+      margin-bottom: 30px;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .login-form, .register-form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .button {
+      background-color: #FFD700;
+      color: black;
+      border: none;
+      padding: 15px 30px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 20px;
+      width: 100%;
+    }
+    .button:hover {
+      background-color: white;
+      transform: scale(1.05);
+    }
+    h1 {
+      font-size: 36px;
+    }
+    h2 {
+      font-size: 30px;
+    }
+    p {
+      font-size: 20px;
+    }
+    input[type="text"], input[type="password"], input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 18px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+    }
+    input::placeholder {
+      color: rgba(255, 215, 0, 0.5);
+    }
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    .profile-dropdown {
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 1px solid #FFD700;
+      padding: 20px;
+      display: none;
+      z-index: 1001;
+    }
+    .profile-dropdown.show {
+      display: block;
+    }
+    #mission-search {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 18px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid #FFD700;
+      color: #FFD700;
+    }
+    #mission-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .mission-box {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #FFD700;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+    .mission-box h3 {
+      margin-bottom: 0;
+    }
+    .mission-box p {
+      margin-bottom: 0;
+    }
+    .mission-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .mission-popup-content {
+      background-color: rgba(0, 0, 0, 0.8);
+      border: 2px solid #FFD700;
+      padding: 30px;
+      max-width: 80%;
+      max-height: 80%;
+      overflow-y: auto;
+      color: #FFD700;
+      position: relative;
+    }
+    .mission-popup-content h2 {
+      margin-top: 0;
+    }
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      color: #FFD700;
+      cursor: pointer;
+    }
+    .start-mission {
+      margin-top: 20px;
+    }
+    .see-contract {
+      padding: 8px 12px;
+      font-size: 14px;
+      background-color: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .see-contract:hover {
+      background-color: #FFD700;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <div class="header">
+    <div class="profile" id="profile">
+      <img src="https://cylonnet.bsg/images/default-profile.svg" alt="Profile picture" class="profile-pic" id="profile-pic">
+      <span id="username">Guest</span>
+    </div>
+    <h1>CYLONNet</h1>
+  </div>
+  <div class="profile-dropdown" id="profile-dropdown">
+    <h3>Profile</h3>
+    <p>Username: <span id="dropdown-username">Guest</span></p>
+    <p>Email: <span id="dropdown-email">Not logged in</span></p>
+    <button class="button" id="logout-button">Logout</button>
+  </div>
+  <div class="main-container">
+    <nav class="menu">
+      <a data-page="home"><img src="https://cylonnet.bsg/images/home.svg" alt="Home icon" width="50" height="50">Home</a>
+      <a data-page="missions"><img src="https://cylonnet.bsg/images/mission.svg" alt="Missions icon" width="50" height="50">Missions</a>
+      <a data-page="login"><img src="https://cylonnet.bsg/images/login.svg" alt="Login icon" width="50" height="50">Login</a>
+      <a data-page="register"><img src="https://cylonnet.bsg/images/register.svg" alt="Register icon" width="50" height="50">Register</a>
+    </nav>
+    <main class="content" id="content">
+      <!-- Content will be dynamically loaded here -->
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      let currentUser = null;
+
+      function loadContent(page) {
+        $('#content').empty();
+        switch(page) {
+          case 'home':
+            $('#content').html(`
+              <div class="box">
+                <h2>Welcome to CYLONNet</h2>
+                <p>CYLONNet is a cutting-edge cybersecurity CTF platform inspired by Battlestar Galactica. Train your skills, complete missions, and become the ultimate defender against Cylon threats.</p>
+              </div>
+            `);
+            break;
+          case 'missions':
+            $('#content').html(`
+              <div class="box">
+                <h2>Available Missions</h2>
+                <input type="text" id="mission-search" placeholder="Search missions...">
+                <div id="mission-grid">
+                  <div class="mission-box">
+                    <div>
+                      <h3>Cylon Infiltration</h3>
+                      <p>Infiltrate a Cylon base and retrieve classified information.</p>
+                    </div>
+                    <button class="button see-contract">See Contract</button>
+                  </div>
+                  <div class="mission-box">
+                    <div>
+                      <h3>FTL Jump Hack</h3>
+                      <p>Hack into the FTL drive system to enable emergency jump.</p>
+                    </div>
+                    <button class="button see-contract">See Contract</button>
+                  </div>
+                  <div class="mission-box">
+                    <div>
+                      <h3>Resurrection Ship Takedown</h3>
+                      <p>Disable the Cylon's resurrection technology.</p>
+                    </div>
+                    <button class="button see-contract">See Contract</button>
+                  </div>
+                </div>
+              </div>
+            `);
+
+            $('.see-contract').click(function() {
+              const missionTitle = $(this).closest('.mission-box').find('h3').text();
+              const missionDescription = $(this).closest('.mission-box').find('p').text();
+              showMissionPopup(missionTitle, missionDescription);
+            });
+
+            $('#mission-search').on('input', function() {
+              const searchTerm = $(this).val().toLowerCase();
+              $('.mission-box').each(function() {
+                const missionText = $(this).text().toLowerCase();
+                $(this).toggle(missionText.includes(searchTerm));
+              });
+            });
+            break;
+          case 'login':
+            $('#content').html(`
+              <div class="box login-form">
+                <h2>Login</h2>
+                <form id="login-form">
+                  <input type="text" placeholder="Username" required><br>
+                  <input type="password" placeholder="Password" required><br>
+                  <button type="submit" class="button">Login</button>
+                </form>
+              </div>
+            `);
+            $('#login-form').submit(function(e) {
+              e.preventDefault();
+              const username = $(this).find('input[type="text"]').val();
+              const password = $(this).find('input[type="password"]').val();
+              login(username, 'user@example.com');
+            });
+            break;
+          case 'register':
+            $('#content').html(`
+              <div class="box register-form">
+                <h2>Register</h2>
+                <form id="register-form">
+                  <input type="text" placeholder="Username" required><br>
+                  <input type="email" placeholder="Email" required><br>
+                  <input type="password" placeholder="Password" required><br>
+                  <button type="submit" class="button">Register</button>
+                </form>
+              </div>
+            `);
+            $('#register-form').submit(function(e) {
+              e.preventDefault();
+              const username = $(this).find('input[type="text"]').val();
+              const email = $(this).find('input[type="email"]').val();
+              const password = $(this).find('input[type="password"]').val();
+              login(username, email);
+            });
+            break;
+        }
+      }
+
+      function showMissionPopup(title, description) {
+        const popupHTML = `
+          <div class="mission-popup">
+            <div class="mission-popup-content">
+              <span class="close-popup">&times;</span>
+              <h2>${title}</h2>
+              <p>${description}</p>
+              <h3>Mission Details:</h3>
+              <p>This is a detailed description of the mission, including objectives, risks, and potential rewards.</p>
+              <button class="button start-mission">Start Mission</button>
+            </div>
+          </div>
+        `;
+        
+        $('body').append(popupHTML);
+        $('.mission-popup').fadeIn();
+
+        $('.close-popup, .mission-popup').click(function(e) {
+          if (e.target === this) {
+            $('.mission-popup').fadeOut(function() {
+              $(this).remove();
+            });
+          }
+        });
+
+        $('.start-mission').click(function() {
+          alert('Starting Docker container for the selected mission...');
+          $('.mission-popup').fadeOut(function() {
+            $(this).remove();
+          });
+        });
+      }
+
+      function login(username, email) {
+        currentUser = { username, email };
+        $('#username').text(username);
+        $('#dropdown-username').text(username);
+        $('#dropdown-email').text(email);
+        $('#profile-pic').attr('src', 'https://cylonnet.bsg/images/logged-in-profile.svg');
+        loadContent('home');
+      }
+
+      function logout() {
+        currentUser = null;
+        $('#username').text('Guest');
+        $('#dropdown-username').text('Guest');
+        $('#dropdown-email').text('Not logged in');
+        $('#profile-pic').attr('src', 'https://cylonnet.bsg/images/default-profile.svg');
+        loadContent('home');
+      }
+
+      $('.menu a').click(function(e) {
+        e.preventDefault();
+        var page = $(this).data('page');
+        loadContent(page);
+      });
+
+      $('#profile').click(function() {
+        $('#profile-dropdown').toggleClass('show');
+      });
+
+      $('#logout-button').click(function() {
+        logout();
+        $('#profile-dropdown').removeClass('show');
+      });
+
+      $(document).click(function(event) {
+        if (!$(event.target).closest('#profile, #profile-dropdown').length) {
+          $('#profile-dropdown').removeClass('show');
+        }
+      });
+
+      loadContent('home');
+
+      const canvas = document.getElementById('starfield');
+      const ctx = canvas.getContext('2d');
+
+      let width, height;
+
+      function setCanvasSize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      setCanvasSize();
+      window.addEventListener('resize', setCanvasSize);
+
+      const stars = [];
+      const numStars = 600;
+      const maxDepth = 32;
+
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * width - width / 2,
+          y: Math.random() * height - height / 2,
+          z: Math.random() * maxDepth,
+        });
+      }
+
+      function moveStars(distance) {
+        stars.forEach(star => {
+          star.z -= distance;
+          if (star.z <= 0) {
+            star.z = maxDepth;
+            star.x = Math.random() * width - width / 2;
+            star.y = Math.random() * height - height / 2;
+          }
+        });
+      }
+
+      function drawStars() {
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, width, height);
+        
+        stars.forEach(star => {
+          const x = (star.x / star.z) * maxDepth + centerX;
+          const y = (star.y / star.z) * maxDepth + centerY;
+          
+          if (x >= 0 && x <= width && y >= 0 && y <= height) {
+            const size = (1 - star.z / 32) * 5;
+            const brightness = 1.2 - star.z / 32;
+            
+            ctx.fillStyle = `rgba(255, 215, 0, ${brightness})`;
+            ctx.beginPath();
+            ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+      }
+
+      let lastTime = 0;
+      function animate(currentTime) {
+        if (!lastTime) lastTime = currentTime;
+        const deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
+
+        moveStars(0.1 * deltaTime / 16);
+        drawStars();
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    });
+  </script>
+</body></html>
