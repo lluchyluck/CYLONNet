@@ -1,3 +1,10 @@
+<?php
+    require_once "../includes/config.php";
+
+?>
+
+
+
 <html>
 
 <head>
@@ -41,14 +48,39 @@
             <!-- El contenido se carga  dinamicamente -->
         </main>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div id="message-box"></div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../assets/js/modules/contentLoader.js"></script>
     <script src="../assets/js/modules/user.js"></script>
     <script src="../assets/js/modules/animations.js"></script>
     <script src="../assets/js/modules/menu.js"></script>
     <script src="../assets/js/app.js"></script>
-    
+    <script>
+        <?php if(isset($_SESSION["mensaje"]) && $_SESSION["mensaje"] !== null): ?>
+        console.log("Mensaje en sesión encontrado: <?php echo htmlspecialchars($_SESSION["mensaje"]); ?>");
+        $(document).ready(function() {
+            console.log("Document ready");
+            var messageBox = $("#message-box");
+            messageBox.text("<?php echo htmlspecialchars($_SESSION["mensaje"]); ?>");
+            messageBox.show();
+            console.log("Message box mostrada");
+            setTimeout(function() {
+                messageBox.hide();
+                console.log("Message box ocultada");
+                <?php unset($_SESSION["mensaje"]); ?>
+            }, 5000);
+        });
+        <?php else: ?>
+        console.log("No se encontró mensaje en la sesión");
+        <?php endif; ?>
+    </script>
+    <script>
+        <?php if(isset($_SESSION["login"]) && $_SESSION["login"] === true): ?>
+        login("<?php echo $_SESSION['username']; ?>", "<?php echo $_SESSION['email']; ?>");
 
+        
+        <?php endif; ?>
+    </script>
 </body>
 
 </html>

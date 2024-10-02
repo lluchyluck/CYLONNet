@@ -112,40 +112,25 @@ function loadLoginContent() {
   $('#content').html(`
     <div class="box login-form">
       <h2>Login</h2>
-      <form id="login-form">
-        <input type="text" placeholder="Username" required><br>
-        <input type="password" placeholder="Password" required><br>
-        <button type="submit" class="button">Login</button>
+       <form id="login" action="../includes/src/formularios/procesar_formulario.php" method="POST">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit" name="login_button" class="button">Login</button>
       </form>
     </div>
   `);
-
-  $('#login-form').submit(function (e) {
-    e.preventDefault();
-    const username = $(this).find('input[type="text"]').val();
-    const password = $(this).find('input[type="password"]').val();
-    login(username, 'user@example.com');
-  });
 }
 
 function loadRegisterContent() {
   $('#content').html(`
     <div class="box register-form">
       <h2>Register</h2>
-      <form id="register-form">
-        <input type="text" placeholder="Username" required><br>
-        <input type="email" placeholder="Email" required><br>
-        <input type="password" placeholder="Password" required><br>
-        <button type="submit" class="button">Register</button>
+      <form id="register" action="../includes/src/formularios/procesar_formulario.php" method="POST">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="email" name="email" placeholder="email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit" name="register_button" class="button">Register</button>
       </form>
     </div>
   `);
-
-  $('#register-form').submit(function (e) {
-    e.preventDefault();
-    const username = $(this).find('input[type="text"]').val();
-    const email = $(this).find('input[type="email"]').val();
-    const password = $(this).find('input[type="password"]').val();
-    login(username, email);
-  });
 }
