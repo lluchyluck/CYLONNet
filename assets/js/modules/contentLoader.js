@@ -35,39 +35,44 @@ function loadMissionsContent() {
     <div class="box">
       <h2>Available Missions</h2>
       <input type="text" id="mission-search" placeholder="Search missions...">
-      <div id="mission-grid">
-        <div class="mission-box">
-          <div>
-            <h3>Cylon Infiltration</h3>
-            <p>Infíltrate una base Humana y recupera información clasificada.</p>
-          </div>
-          <button class="button see-contract">See Contract</button>
-        </div>
-        <div class="mission-box">
-          <div>
-            <h3>FTL Jump Hack</h3>
-            <p>Hackea el sistema de propulsión FTL para habilitar un salto de emergencia.</p>
-          </div>
-          <button class="button see-contract">See Contract</button>
-        </div>
-        <div class="mission-box">
-          <div>
-            <h3>Human Galactica Takedown</h3>
-            <p>Infiltrar, eliminar líderes humanos, sabotear comunicaciones, aniquilar.</p>
-          </div>
-          <button class="button see-contract">See Contract</button>
-        </div>
-      </div>
+      <div id="mission-grid"></div>
     </div>
   `);
 
-  // Añadir eventos y lógica específica de la sección "missions"
-  $('.see-contract').click(function () {
-    const missionTitle = $(this).closest('.mission-box').find('h3').text();
-    const missionDescription = $(this).closest('.mission-box').find('p').text();
-    showMissionPopup(missionTitle, missionDescription);
+  // Cargar las misiones dinámicamente desde el servidor
+  $.ajax({
+    url: '../includes/src/getters/get_missions.php', // Archivo PHP que devuelve las misiones
+    method: 'GET',
+    success: function (missions) {
+      const missionGrid = $('#mission-grid');
+      missionGrid.empty(); // Limpiar misiones anteriores
+
+      missions.forEach(mission => {
+        const missionBox = `
+          <div class="mission-box">
+            <div style="width:1900px">
+              <h3>${mission.name}</h3>
+              <p>${mission.description}</p>
+            </div>
+            <button class="button see-contract">See Contract</button>
+          </div>
+        `;
+        missionGrid.append(missionBox);
+      });
+
+      // Añadir eventos y lógica para los botones
+      $('.see-contract').click(function () {
+        const missionTitle = $(this).closest('.mission-box').find('h3').text();
+        const missionDescription = $(this).closest('.mission-box').find('p').text();
+        showMissionPopup(missionTitle, missionDescription);
+      });
+    },
+    error: function () {
+      alert('Error al cargar las misiones');
+    }
   });
 
+  // Filtrar misiones en base al input
   $('#mission-search').on('input', function () {
     const searchTerm = $(this).val().toLowerCase();
     $('.mission-box').each(function () {

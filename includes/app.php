@@ -87,7 +87,7 @@ class Aplicacion
     public function logueaUsuario($user, $password)
     {
 
-        if (($usuarioAComprobar = $this->existeUsuario($user, "")) !== null) {
+        if (($usuarioAComprobar = $this->getUser($user, "")) !== null) {
                
             if (password_verify($password,$usuarioAComprobar["password"])) {
                 return $usuarioAComprobar;
@@ -126,7 +126,7 @@ class Aplicacion
             return null;
         }
     }
-    public function existeUsuario($nombreUsuario, $email)
+    public function getUser($nombreUsuario, $email)
     {
         $users = $this->getAllUsers();
 
@@ -141,6 +141,24 @@ class Aplicacion
         }
 
         return null;
+    }
+    public function getAllMissions()
+    {
+        $db = $this->getConexionBd();
+        $sql = "SELECT id, name,description,tag,icon,dockerlocation FROM ctfs";
+        $result = mysqli_query($db, $sql);
+
+        if (mysqli_num_rows($result) > 0) {
+            $missions = array();
+            while ($row = mysqli_fetch_assoc($result)) {
+
+                $missions[] = $row; // Add complete user data to the array
+            }
+            mysqli_free_result($result);
+            return $missions;
+        } else {
+            return null;
+        }
     }
     public function logout()
     {

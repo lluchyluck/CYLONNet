@@ -69,7 +69,7 @@ function setMessageAndRedirect($message)
 
 function registrarUsuario($app, $db, $user)
 {
-    if ($app->existeUsuario($user->getUsername(), $user->getEmail()) != null) {
+    if ($app->getUser($user->getUsername(), $user->getEmail()) != null) {
         setMessageAndRedirect("Error en el registro: el usuario ya está registrado.");
         return false;
     }
