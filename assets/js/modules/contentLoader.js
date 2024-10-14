@@ -48,11 +48,21 @@ function loadMissionsContent() {
       missionGrid.empty(); // Limpiar misiones anteriores
 
       missions.forEach(mission => {
+
+        const tagsJSON = JSON.parse(mission.tags);
+        const tagsArray = tagsJSON.tagnames; 
+        const tagsList = Array.isArray(tagsArray) ? tagsArray.join(', ') : 'No tags available'; 
+
+
         const missionBox = `
           <div class="mission-box">
+            <img src="${mission.icon}" alt="${mission.name} icon" style="width: 100px; height: 100px; margin-right: 20px;"> 
             <div style="width:1900px">
               <h3>${mission.name}</h3>
               <p>${mission.description}</p>
+              <div class="tags-box">
+                <strong>Tags:</strong> <span>${tagsList}</span>
+              </div>
             </div>
             <button class="button see-contract">See Contract</button>
           </div>

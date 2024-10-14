@@ -145,7 +145,7 @@ class Aplicacion
     public function getAllMissions()
     {
         $db = $this->getConexionBd();
-        $sql = "SELECT id, name,description,tag,icon,dockerlocation FROM ctfs";
+        $sql = "SELECT id, name,description,tags,icon,dockerlocation FROM ctfs";
         $result = mysqli_query($db, $sql);
 
         if (mysqli_num_rows($result) > 0) {
