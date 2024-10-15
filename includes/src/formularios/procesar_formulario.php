@@ -10,7 +10,7 @@ function handleLogin()
     $nombre_usuario = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $password = $_POST['password'];
 
-    if (!validateInputs($nombre_usuario, "aaadsacxas@gmail.com", "aaaaaaaaaaaaa")) {
+    if (!validateInputs($nombre_usuario, "aaadsacxas@gmail.com", "aaaaaaaaaaaaa",NULL)) {
         return;
     }
 
@@ -25,17 +25,30 @@ function handleRegistration()
     $nombre_usuario = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
-    $img = "TODO";
-
-    if (!validateInputs($nombre_usuario, $email, $password)) {
+    if($_FILES["image"]["size"] !== 0)
+        $img = $_FILES["image"];
+    else
+        $img = NULL;
+    print_r($img);
+    if (!validateInputs($nombre_usuario, $email, $password, $img)) {
         return;
     }
-
-    $user = new Usuario($nombre_usuario, $password, $email, $img);
+    $ruta_destino = $_SERVER['DOCUMENT_ROOT'] . "/CYLONNet/assets/images/profile/" . basename($img["name"]);
+    
+    if($img !== NULL){
+        if(!move_uploaded_file($img['tmp_name'], $ruta_destino)){
+            setMessageAndRedirect("Error al guardar la imagen en el servidor.");
+            return false; // Indicar error
+        }
+        $imagenRuta = "/" . basename($img["name"]); 
+    }else{
+        $imagenRuta = "/default.jpg"; 
+    }
+    $user = new Usuario($nombre_usuario, $password, $email, $imagenRuta);
     registrarUsuario($GLOBALS['app'], $GLOBALS['db'], $user);
 }
 
-function validateInputs($nombre_usuario, $email, $password)
+function validateInputs($nombre_usuario, $email, $password, $image)
 {
     if (empty($nombre_usuario) || empty($email) || empty($password)) {
         setMessageAndRedirect("Por favor, completa todos los campos.");
@@ -56,10 +69,51 @@ function validateInputs($nombre_usuario, $email, $password)
         setMessageAndRedirect("El nombre de usuario solo puede contener letras, números y guiones bajos.");
         return false;
     }
+    if($image !== NULL)
+        if (!validateImage($image)) {
+            return false;
+        }
 
     return true;
 }
+function validateImage($image)
+{
+   
+    // Comprobar el tipo de archivo
+    $allowedMimeTypes = ['image/jpeg', 'image/png'];
+    $fileType = mime_content_type($image['tmp_name']);
+    if (!in_array($fileType, $allowedMimeTypes)) {
+        setMessageAndRedirect("Tipo de archivo no permitido. Solo se permiten imágenes JPEG, PNG.");
+        return false;
+    }
+    
 
+    // Comprobar el tamaño del archivo (ejemplo: máximo 2 MB)
+    if ($image['size'] > 2 * 1024 * 1024) {
+        setMessageAndRedirect("El tamaño de la imagen no debe superar los 2 MB.");
+        return false;
+    }
+
+    // Comprobar la resolución de la imagen (opcional)
+    list($width, $height) = getimagesize($image['tmp_name']);
+     // Verificar si la imagen excede las dimensiones permitidas
+     if ($width > 400 || $height > 400) {
+        setMessageAndRedirect("La imagen no debe exceder los 400x400 píxeles.");
+        return false;
+    }
+
+    // Verificar si la imagen es cuadrada
+    if ($width !== $height) {
+        setMessageAndRedirect("La imagen debe ser cuadrada.");
+        return false;
+    }
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $image["name"])) {
+        setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos.");
+        return false;
+    }
+
+    return true;
+}
 function setMessageAndRedirect($message)
 {
     $_SESSION["mensaje"] = $message;
@@ -99,7 +153,7 @@ function login($user)
     $_SESSION["id"] = $user["id"];
     $_SESSION["username"] = $user["username"];
     $_SESSION["email"] = $user["email"];
-    $_SESSION["img"] = $user["img"];
+    $_SESSION["icon"] = $user["icon"];
     $_SESSION["mensaje"] = "Usuario logeado con exito: " . $user["username"];
 }
 

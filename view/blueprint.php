@@ -19,7 +19,7 @@
     <canvas id="starfield"></canvas>
     <div class="header">
         <div class="profile" id="profile">
-            <img src="https://cylonnet.bsg/images/default-profile.svg" alt="Profile picture" class="profile-pic" id="profile-pic">
+            <img src="<?php echo "/CYLONNet/assets/images/profile" . $_SESSION["icon"]; ?>" alt="Profile picture" class="profile-pic" id="profile-pic">
             <span id="username">Guest</span>
         </div>
         <div id="animated-text" class="title-logo">

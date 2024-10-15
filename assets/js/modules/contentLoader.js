@@ -34,7 +34,12 @@ function loadMissionsContent() {
   $('#content').html(`
     <div class="box">
       <h2>Available Missions</h2>
-      <input type="text" id="mission-search" placeholder="Search missions...">
+       <div style="display: flex; gap: 10px;">
+        <input type="text" id="mission-search" placeholder="Search missions...">
+        <select id="tag-filter">
+          <option value="">All Tags</option>
+        </select>
+      </div>
       <div id="mission-grid"></div>
     </div>
   `);
@@ -82,6 +87,33 @@ function loadMissionsContent() {
     }
   });
 
+  // Cargar las etiquetas dinámicamente desde el servidor
+  $.ajax({
+    url: '../includes/src/getters/get_tags.php', // Archivo PHP que devuelve las etiquetas
+    method: 'GET',
+    success: function(tags) {    
+      let tagList = tags;
+      let tagSelect = $('#tag-filter'); 
+      tagSelect.empty();
+      tagSelect.append('<option value="">All Tags</option>');
+
+      tagList.forEach(function(tag) {
+          tagSelect.append('<option value="' + tag + '">' + tag + '</option>');
+      });
+  },
+    error: function() {
+      alert('Error al cargar las etiquetas');
+    }
+  });
+  // Filtrar misiones en base a la etiqueta seleccionada
+  $('#tag-filter').on('change', function() {
+    const selectedTag = $(this).val().toLowerCase();
+    $('.mission-box').each(function () {
+      const missionText = $(this).text().toLowerCase();
+      $(this).toggle(missionText.includes(selectedTag));
+    });
+  });
+  
   // Filtrar misiones en base al input
   $('#mission-search').on('input', function () {
     const searchTerm = $(this).val().toLowerCase();
@@ -140,10 +172,11 @@ function loadRegisterContent() {
   $('#content').html(`
     <div class="box register-form">
       <h2>Register</h2>
-      <form id="register" action="../includes/src/formularios/procesar_formulario.php" method="POST">
+      <form id="register" action="../includes/src/formularios/procesar_formulario.php" method="POST" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="Username" required><br>
         <input type="email" name="email" placeholder="email" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
+        <input type="file" name="image" id="image" accept="image/*"><br><br>
         <button type="submit" name="register_button" class="button">Register</button>
       </form>
     </div>

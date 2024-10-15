@@ -160,6 +160,26 @@ class Aplicacion
             return null;
         }
     }
+    public function getAllTags()
+    {
+        $db = $this->getConexionBd();
+        $sql = "SELECT tagname FROM tags";
+        $result = mysqli_query($db, $sql);
+
+        if (mysqli_num_rows($result) > 0) {
+            $tags = array();
+            $i = 0;
+            while ($row = mysqli_fetch_assoc($result)) {
+
+                $tags[$i] = $row["tagname"]; // Add complete user data to the array
+                $i++;
+            }
+            mysqli_free_result($result);
+            return $tags;
+        } else {
+            return null;
+        }
+    }
     public function logout()
     {
         unset($_SESSION['login']);

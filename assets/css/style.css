@@ -310,3 +310,26 @@ input::placeholder {
   content: ' <<';
   color: #FFA500;
 }
+
+#tag-filter {
+  display: inline-block;
+  vertical-align: top; /* Alinea el select con el campo de texto */
+  margin-left: 10px; /* Añade margen entre el input y el select */
+  padding: 10px;
+  font-size: 18px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #FFD700;
+  color: #FFD700;
+  border-radius: 5px;
+  width: 200px; /* Tamaño del select */
+  height: 45px;
+}
+#tag-filter:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro al hacer hover */
+  color: white; /* Cambia el color del texto a blanco */
+}
+
+#tag-filter option {
+  background-color: black; /* Fondo negro para las opciones */
+  color: #FFD700; /* Texto dorado para las opciones */
+}
