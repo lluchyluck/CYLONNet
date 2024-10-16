@@ -180,14 +180,5 @@ class Aplicacion
             return null;
         }
     }
-    public function logout()
-    {
-        unset($_SESSION['login']);
-        unset($_SESSION['username']);
-        unset($_SESSION['id']);
-        unset($_SESSION['img']);
-        session_destroy();
-        session_start();
-        $_SESSION["mensaje"] = "Sesion cerrada!!!";
-    }
+    
 }

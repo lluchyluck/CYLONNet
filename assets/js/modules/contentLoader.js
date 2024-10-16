@@ -13,6 +13,9 @@ function loadContent(page) {
     case 'register':
       loadRegisterContent();
       break;
+    case 'developer':
+      loadDeveloperContent();
+      break;
   }
 }
 
@@ -164,6 +167,7 @@ function loadLoginContent() {
         <input type="password" name="password" placeholder="Password" required><br>
         <button type="submit" name="login_button" class="button">Login</button>
       </form>
+      <p>¿No estás registrado?: <a href="javascript:void(0)" onclick="loadContent('register')">regístrate</a></p>
     </div>
   `);
 }
@@ -179,6 +183,22 @@ function loadRegisterContent() {
         <input type="file" name="image" id="image" accept="image/*"><br><br>
         <button type="submit" name="register_button" class="button">Register</button>
       </form>
+      <p>¿Ya estás registrado?: <a href="javascript:void(0)" onclick="loadContent('login')">login</a></p>
     </div>
   `);
+}
+
+function loadDeveloperContent() {
+  $.ajax({
+    url: '../includes/src/getters/get_developer.php', // Archivo PHP que devuelve las misiones
+    method: 'GET',
+    success: function (response) {
+      if(response === "1"){
+        
+      }
+    },
+    error: function () {
+      alert('Error al cargar la pestaña de developer');
+    }
+  });
 }

@@ -19,7 +19,7 @@
     <canvas id="starfield"></canvas>
     <div class="header">
         <div class="profile" id="profile">
-            <img src="<?php echo "/CYLONNet/assets/images/profile" . $_SESSION["icon"]; ?>" alt="Profile picture" class="profile-pic" id="profile-pic">
+            <img src="<?php if($_SESSION["login"] === true)  echo "/CYLONNet/assets/images/profile" . $_SESSION["icon"]; else  echo "/CYLONNet/assets/images/profile/icon.gif"; ?>" alt="Profile picture" class="profile-pic" >
             <span id="username">Guest</span>
         </div>
         <div id="animated-text" class="title-logo">
@@ -31,18 +31,18 @@
         <h3>Profile</h3>
         <p>Username: <span id="dropdown-username">Guest</span></p>
         <p>Email: <span id="dropdown-email">Not logged in</span></p>
-        <button class="button" id="logout-button">Logout</button>
+        
+            <?php if($_SESSION["login"] === true)  echo '<form action="../includes/src/formularios/procesar_formulario.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>'; else echo '<button onclick="loadContent(\'login\')" class="button">Login</button>'; ?>
+       
     </div>
     <div class="main-container">
         <nav class="menu">
-            <a data-page="home"><img src="../assets/images/basecyclon.png" alt="Home icon" width="50"
+            <a data-page="home"><img src="../assets/images/menu/basecyclon.png" alt="Home icon" width="50"
                     height="50">Home</a>
-            <a data-page="missions"><img src="../assets/images/raider.png" alt="Missions icon" width="50"
+            <a data-page="missions"><img src="../assets/images/menu/raider.png" alt="Missions icon" width="50"
                     height="50">Missions</a>
-            <a data-page="login"><img src="https://cylonnet.bsg/images/login.svg" alt="Login icon" width="50"
-                    height="50">Login</a>
-            <a data-page="register"><img src="https://cylonnet.bsg/images/register.svg" alt="Register icon" width="50"
-                    height="50">Register</a>
+            <a data-page="developer"><img src="../assets/images/menu/gearwheel.png" alt="Dev icon" width="50"
+                    height="50">Developer</a>
         </nav>
         <main class="content" id="content">
             <!-- El contenido se carga  dinamicamente -->
