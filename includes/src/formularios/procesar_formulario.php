@@ -159,6 +159,7 @@ function login($user)
     $_SESSION["id"] = $user["id"];
     $_SESSION["username"] = $user["username"];
     $_SESSION["email"] = $user["email"];
+    $_SESSION["developer"] = (bool)$user["developer"];
     $_SESSION["icon"] = $user["icon"];
 }
 

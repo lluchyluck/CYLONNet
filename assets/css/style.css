@@ -129,22 +129,49 @@ h2 {
 p {
   font-size: 20px;
 }
-
 input[type="text"],
 input[type="password"],
-input[type="email"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-size: 18px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid #FFD700;
-  color: #FFD700;
+input[type="email"],
+#mission-search,
+#tag-filter,
+textarea {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    padding: 10px; /* Espaciado interno */
+    margin-bottom: 15px; /* Espaciado inferior */
+    font-size: 18px; /* Tamaño de fuente */
+    font-family: 'Courier New', monospace; /* Fuente para todos los inputs */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo semitransparente */
+    border: 1px solid #FFD700; /* Borde dorado */
+    color: #FFD700; /* Color del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: border-color 0.3s, background-color 0.3s; /* Transición suave para borde y fondo */
 }
 
-input::placeholder {
-  color: rgba(255, 215, 0, 0.5);
+input[type="text"]::placeholder,
+input[type="password"]::placeholder,
+input[type="email"]::placeholder {
+    color: rgba(255, 215, 0, 0.5); /* Color del texto del placeholder */
 }
+
+input[type="text"]:hover,
+input[type="password"]:hover,
+input[type="email"]:hover,
+#mission-search:hover,
+#tag-filter:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro al pasar el mouse */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+#mission-search:focus,
+#tag-filter:focus {
+    border-color: white; /* Cambia el color del borde al enfocar */
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro al enfocar */
+    outline: none; /* Elimina el contorno predeterminado del navegador */
+}
+
+
 
 #starfield {
   position: fixed;
@@ -224,11 +251,13 @@ input::placeholder {
   background-color: rgba(0, 0, 0, 0.8);
   border: 2px solid #FFD700;
   padding: 30px;
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 100%;
+  max-height: 100%;
   overflow-y: auto;
   color: #FFD700;
   position: relative;
+  word-wrap: break-word; /* Asegura el salto de línea en palabras largas */
+  margin-right: 20px;
 }
 
 .mission-popup-content h2 {
@@ -332,4 +361,85 @@ input::placeholder {
 #tag-filter option {
   background-color: black; /* Fondo negro para las opciones */
   color: #FFD700; /* Texto dorado para las opciones */
+}
+
+.toggle-label {
+  cursor: pointer; /* Cambia el cursor al pasar sobre la etiqueta */
+  color: #FFD700; /* Color del texto */
+  font-size: 22px; /* Tamaño de fuente para el texto */
+  display: flex; /* Usar flex para alinear el texto y la flecha */
+  align-items: center; /* Centrar verticalmente */
+  transition: color 0.3s; /* Transición suave para el color */
+}
+
+.toggle-label:hover {
+  color: white; /* Cambiar color al pasar el mouse */
+}
+
+.arrow {
+  margin-left: 10px; /* Espacio entre el texto y la flecha */
+  font-size: 24px; /* Tamaño de fuente para la flecha */
+  transition: transform 0.3s; /* Transición suave para la rotación */
+}
+
+/* Clase para la flecha expandida */
+.toggle-content {
+  display: none; /* Ocultar contenido por defecto */
+}
+
+/* Cuando el contenido está visible, rotar la flecha */
+.toggle-content.show ~ .toggle-label .arrow {
+  transform: rotate(180deg); /* Rota la flecha hacia arriba */
+}
+textarea {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  padding: 10px; /* Espaciado interno */
+  margin-bottom: 15px; /* Espaciado inferior */
+  font-size: 18px; /* Tamaño de fuente */
+  background-color: rgba(255, 255, 255, 0.1); /* Fondo semitransparente */
+  border: 1px solid #FFD700; /* Borde dorado */
+  color: #FFD700; /* Color del texto */
+  border-radius: 5px; /* Bordes redondeados */
+  resize: vertical; /* Permite redimensionar solo verticalmente */
+  transition: border-color 0.3s, background-color 0.3s; /* Transición suave para borde y fondo */
+}
+
+textarea::placeholder {
+  color: rgba(255, 215, 0, 0.5); /* Color del texto del placeholder */
+}
+
+textarea:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro al pasar el mouse */
+}
+
+textarea:focus {
+  border-color: white; /* Cambia el color del borde al enfocar */
+  background-color: rgba(255, 255, 255, 0.2); /* Fondo ligeramente más claro al enfocar */
+  outline: none; /* Elimina el contorno predeterminado del navegador */
+}
+.mission-image {
+  margin-left: 20px;
+  margin-right: 20px; /* Espacio entre la imagen y el contenido de la misión */
+  display: flex; /* Usar flexbox para centrar la imagen si es necesario */
+  align-items: center; /* Centrar verticalmente la imagen */
+  border: 1px solid #FFD700; /* Borde dorado alrededor de la imagen */
+  border-radius: 8px; /* Bordes redondeados */
+  overflow: hidden; /* Asegura que el contenido no se desborde */
+  background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente oscuro */
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5); /* Sombra para dar profundidad */
+}
+
+.mission-image img {
+  width: 100%;/* Ajusta el tamaño máximo de la imagen al contenedor */
+  height: auto; /* Mantiene la proporción de la imagen */
+  border-radius: 8px; /* Bordes redondeados */
+  transition: transform 0.3s, box-shadow 0.3s; /* Transición suave para efectos */
+}
+
+.mission-image img:hover {
+  transform: scale(1.05); /* Efecto de zoom al pasar el cursor */
+  box-shadow: 0 6px 15px rgba(255, 215, 0, 0.7); /* Sombra más intensa al pasar el cursor */
+}
+.mission-image,.mission-popup-content {
+  flex: 1; /* O puedes usar flex: 0 1 auto; para mantener su tamaño */
 }

@@ -1,5 +1,5 @@
 <?php
-require_once "app.php";
+require_once __DIR__ ."/app.php";
 
 
 $app = Aplicacion::getInstance();

@@ -1,5 +1,6 @@
 <?php
-require_once "src/usuario.php";
+
+require_once __DIR__ ."/src/usuario.php";
 
 class Aplicacion
 {
@@ -46,6 +47,8 @@ class Aplicacion
     {
         if (is_a($objeto, "Usuario")) {
             return $this->insertarUsuario($objeto);
+        }else if (is_a($objeto, "Mission")) {
+            return $this->insertarMision($objeto);
         } else {
             echo "El objeto no pertenece a ninguna clase conocida";
             return false;
@@ -55,28 +58,66 @@ class Aplicacion
     {
         $db = $this->getConexionBd();
         $usuario->setId($this->nextIdUsuario());
-        $sqlQuery = "INSERT INTO users (id, username, email, password, icon) VALUES (?, ?, ?, ?, ?)";
-
+        $sqlQuery = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
+        
         if ($stmt = mysqli_prepare($db, $sqlQuery)) {
+            echo "hola";
             $hashedPassword = password_hash($usuario->getPassword(), PASSWORD_BCRYPT);
-
+            $developerDefault=false;
             mysqli_stmt_bind_param(
                 $stmt,
-                "issss",
+                "isssis",
                 $usuario->getId(),
                 $usuario->getUsername(),
                 $usuario->getEmail(),
                 $hashedPassword,
+                $developerDefault,
                 $usuario->getImg()
             );
-
+            
             $result = mysqli_stmt_execute($stmt);
+            
             mysqli_stmt_close($stmt);
 
             if ($result) {
                 return true;
             } else {
                 error_log("Error al insertar el usuario: " . mysqli_error($db));
+                return false;
+            }
+        } else {
+            error_log("Error al preparar la consulta: " . mysqli_error($db));
+            return false;
+        }
+    }
+    private function insertarMision($mision)
+    {
+        $db = $this->getConexionBd();
+        $mision->setId($this->nextIdMision());
+        $sqlQuery = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        if ($stmt = mysqli_prepare($db, $sqlQuery)) {
+            $hashedPassword = password_hash($mision->getPassword(), PASSWORD_BCRYPT);
+            $dockerlocation="/TODO";
+            mysqli_stmt_bind_param(
+                $stmt,
+                "isssss",
+                $mision->getId(),
+                $mision->getName(),
+                $mision->getDescription(),
+                $mision->getTags(),
+                $mision->getIcon(),
+                $dockerlocation
+            );
+            
+            $result = mysqli_stmt_execute($stmt);
+            
+            mysqli_stmt_close($stmt);
+
+            if ($result) {
+                return true;
+            } else {
+                error_log("Error al insertar la mision: " . mysqli_error($db));
                 return false;
             }
         } else {
@@ -108,10 +149,20 @@ class Aplicacion
         mysqli_free_result($resultmaxIDquery);
         return $maxId + 1;
     }
+    private function nextIdMision()
+    {
+        $db = $this->getConexionBd();
+        $maxIDquery = "SELECT MAX(id) FROM ctfs";
+        $resultmaxIDquery = mysqli_query($db, $maxIDquery);
+        $row = mysqli_fetch_row($resultmaxIDquery);
+        $maxId = $row[0];
+        mysqli_free_result($resultmaxIDquery);
+        return $maxId + 1;
+    }
     public function getAllUsers()
     {
         $db = $this->getConexionBd();
-        $sql = "SELECT id, username,email, password, icon FROM users";
+        $sql = "SELECT id, username,email, password, developer, icon FROM users";
         $result = mysqli_query($db, $sql);
 
         if (mysqli_num_rows($result) > 0) {
@@ -137,6 +188,22 @@ class Aplicacion
         foreach ($users as $user) {
             if (($user['username'] === $nombreUsuario) || ($user['email'] === $email)) {
                 return $user; // Return the complete user data
+            }
+        }
+
+        return null;
+    }
+    public function getMission($nombre)
+    {
+        $missions = $this->getAllMissions();
+
+        if (empty($missions) || $missions == null) {
+            return null; // No users found, not an error
+        }
+
+        foreach ($missions as $mission) {
+            if (($mission['username'] === $nombre)) {
+                return $mission; // Return the complete user data
             }
         }
 

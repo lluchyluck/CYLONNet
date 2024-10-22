@@ -6,16 +6,16 @@ class Mission
     private $id;
     private $name;
     private $description;
-    private $tag;
+    private $tags;
     private $icon;
     private $dockerlocation;
 
     // Constructor para inicializar las propiedades
-    public function __construct($name,$description, $tag, $icon, $dockerlocation)
+    public function __construct($name,$description, $tags, $icon, $dockerlocation)
     {
         $this->name = $name;
         $this->description = $description;
-        $this->tag = $tag;
+        $this->tags = $tags;
         $this->icon = $icon;
         $this->dockerlocation = $dockerlocation;
     }
@@ -34,7 +34,7 @@ class Mission
 
     public function getTag()
     {
-        return $this->tag;
+        return $this->tags;
     }
 
     public function getIcon()
@@ -65,7 +65,7 @@ class Mission
 
     public function setTag($tag)
     {
-        $this->tag = $tag;
+        $this->tags = $tag;
     }
 
     public function setIcon($icon)
