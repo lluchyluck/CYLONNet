@@ -64,7 +64,7 @@ function loadMissionsContent() {
 
         const missionBox = `
           <div class="mission-box">
-            <img src="${mission.icon}" alt="${mission.name} icon" style="width: 100px; height: 100px; margin-right: 20px;"> 
+            <img src="/CYLONNet/assets/images/missions${mission.icon}" alt="${mission.name} icon" style="width: 100px; height: 100px; margin-right: 20px;"> 
             <div style="width:1900px">
               <h3>${mission.name}</h3>
               <p>${mission.description.split(' ').slice(0, 9).join(' ')}...</p>
@@ -72,6 +72,7 @@ function loadMissionsContent() {
               <div class="tags-box">
                 <strong>Tags:</strong> <span>${tagsList}</span>
               </div>
+              <h4 style="display: none;">${mission.id}</h4>
             </div>
             <button class="button see-contract">See Contract</button>
           </div>
@@ -84,7 +85,8 @@ function loadMissionsContent() {
         const missionTitle = $(this).closest('.mission-box').find('h3').text();
         const missionDescription = $(this).closest('.mission-box').find('h2').text();
         const missionIcon = $(this).closest('.mission-box').find('img').attr('src');
-        showMissionPopup(missionTitle, missionDescription, missionIcon);
+        const missionId = $(this).closest('.mission-box').find('h4').text();
+        showMissionPopup(missionTitle, missionDescription, missionIcon, missionId);
       });
     },
     error: function () {
@@ -128,7 +130,7 @@ function loadMissionsContent() {
     });
   });
 }
-function showMissionPopup(title, description, image) {
+function showMissionPopup(title, description, image, id) {
   const popupHTML = `
     <div class="mission-popup">
       <div class="mission-image">
@@ -156,11 +158,22 @@ function showMissionPopup(title, description, image) {
   });
 
   $('.start-mission').click(function () {
-    alert('Starting Docker container for the selected mission...');
-    $('.mission-popup').fadeOut(function () {
-      $(this).remove();
+    const missionId = id; // Aquí obtén el ID de la misión o el nombre del contenedor que quieres iniciar
+    $.ajax({
+        url: '../includes/src/start_mission.php', // Cambia esto a la ruta de tu archivo PHP
+        type: 'POST',
+        data: { missionId: missionId }, // Envía el ID de la misión al servidor
+        success: function(response) {
+            alert('Docker say: ' + response);
+            $('.mission-popup').fadeOut(function () {
+                $(this).remove();
+            });
+        },
+        error: function(xhr, status, error) {
+            alert('Error starting Docker container: ' + error);
+        }
     });
-  });
+});
 }
 function loadLoginContent() {
   $('#content').html(`
@@ -170,7 +183,7 @@ function loadLoginContent() {
         <input type="text" name="username" placeholder="Username" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <button type="submit" name="login_button" class="button">Login</button>
-      </form>
+      </form>F
       <p>¿No estás registrado?: <a href="javascript:void(0)" onclick="loadContent('register')">regístrate</a></p>
     </div>
   `);
@@ -250,8 +263,8 @@ function loadDeveloperContent() {
           
           <!-- Imagen de administrador -->
           <div class="toggle-content" style="display: none;">
-              <form id="add-admin" action="../includes/src/formularios/procesar_formulario.php" method="POST">
-                  <input type="text" name="admin_username" placeholder="Username" required><br>
+              <form id="add-admin" action="../includes/src/formularios/formHandler.php" method="POST">
+                  <input type="text" name="username" placeholder="Username" required><br>
                   
                   <button type="submit" name="add_admin_button" class="button">Añadir Administrador</button>
               </form>
@@ -267,9 +280,9 @@ function loadDeveloperContent() {
           <br><br>
 
           <div class="toggle-content">
-              <form id="add-mission" action="../includes/src/formularios/procesar_formulario.php" method="POST" enctype="multipart/form-data">
+              <form id="remove-mission" action="../includes/src/formularios/formHandler.php" method="POST">
                   <input type="text" name="mission_name" placeholder="Nombre de la misión" required><br>
-                  <button type="submit" name="add_mission_button" class="button">Eliminar Misión</button>
+                  <button type="submit" name="remove_mission_button" class="button">Eliminar Misión</button>
               </form>
           </div>
       </div>

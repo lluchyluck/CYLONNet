@@ -30,7 +30,29 @@ function handler(){
             }else{
                 return;
             }
+        }else if (isset($_POST['add_admin_button'])){
+           
+            require_once __DIR__ ."/formtypes/form_addAdmin.php";
+            if(($_SESSION["login"] === true) && isset($_SESSION["developer"]) && ($_SESSION["developer"] === true)){
+                $form = new FormAddAdmin($app);
+                $form->handle();
+            }else{
+                return;
+            }
+        }else if (isset($_POST['remove_mission_button'])){
+           
+            require_once __DIR__ ."/formtypes/form_removeMission.php";
+            if(($_SESSION["login"] === true) && isset($_SESSION["developer"]) && ($_SESSION["developer"] === true)){
+                $form = new FormRemoveMission($app);
+                $form->handle();
+            }else{
+                return;
+            }
+        }else{
+            echo "Los ctfs se encuentran en otro lugar piratilla!!!.";
         }
+    }else{
+        echo "No vas a encontrar nada piratilla!!!";
     }
 }
 

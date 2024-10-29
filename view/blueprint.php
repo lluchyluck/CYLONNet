@@ -32,7 +32,7 @@
         <p>Username: <span id="dropdown-username">Guest</span></p>
         <p>Email: <span id="dropdown-email">Not logged in</span></p>
         
-            <?php if($_SESSION["login"] === true)  echo '<form action="../includes/src/formularios/procesar_formulario.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>'; else echo '<button onclick="loadContent(\'login\')" class="button">Login</button>'; ?>
+            <?php if($_SESSION["login"] === true)  echo '<form action="../includes/src/formularios/formHandler.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>'; else echo '<button onclick="loadContent(\'login\')" class="button">Login</button>'; ?>
        
     </div>
     <div class="main-container">

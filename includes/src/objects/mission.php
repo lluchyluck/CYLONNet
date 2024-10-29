@@ -32,7 +32,7 @@ class Mission
         return $this->name;
     }
 
-    public function getTag()
+    public function getTags()
     {
         return $this->tags;
     }
@@ -63,7 +63,7 @@ class Mission
         $this->name = $name;
     }
 
-    public function setTag($tag)
+    public function setTags($tag)
     {
         $this->tags = $tag;
     }

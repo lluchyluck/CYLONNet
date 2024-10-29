@@ -15,7 +15,7 @@ class FormRegister extends Form {
             return;
         }
         
-        $imagenRuta = ($img !== null) ? $this->handleImageUpload($img) : "/default.jpg";
+        $imagenRuta = ($img !== null) ? $this->handleImageUpload($img) : "/icon.gif";
         
         if ($imagenRuta === false) {
             return;
@@ -86,7 +86,7 @@ class FormRegister extends Form {
         }
 
         if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z]+)$/', $image["name"])) {
-            $this->setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos.:" . $image["name"]);
+            $this->setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos.");
             return false;
         }
 

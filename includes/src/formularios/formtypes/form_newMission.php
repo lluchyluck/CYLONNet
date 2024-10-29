@@ -6,7 +6,7 @@ class FormNewMission extends Form {
 
     public function handle() {
         
-
+        
         $name = filter_input(INPUT_POST, 'mission_name', FILTER_SANITIZE_STRING);
         $description = filter_input(INPUT_POST, 'mission_description', FILTER_SANITIZE_STRING);
         $tags = filter_input(INPUT_POST, 'mission_tags', FILTER_SANITIZE_STRING);
@@ -22,7 +22,6 @@ class FormNewMission extends Form {
         if ($imagenRuta === false) {
             return;
         }
-        
         $mision = new Mission($name, $description, $tags, $imagenRuta, $dockerLoc);
         
         $this->registrarMision($mision);
@@ -88,7 +87,7 @@ class FormNewMission extends Form {
         }
 
         if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z]+)$/', $image["name"])) {
-            $this->setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos.:" . $image["name"]);
+            $this->setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos.");
             return false;
         }
 
@@ -96,7 +95,7 @@ class FormNewMission extends Form {
     }
 
     private function registrarMision($mision) {
-        if ($this->app->getMission($mision->getName()) !== null) {
+        if ($this->app->getMission($mision->getName(), null) !== null) {        
             $this->setMessageAndRedirect("Error en el registro: la misión ya está registrada.");
             return false;
         }

@@ -1,6 +1,7 @@
 <?php
 
-require_once __DIR__ ."/src/usuario.php";
+require_once __DIR__ ."/src/objects/usuario.php";
+require_once __DIR__ ."/src/objects/mission.php";
 
 class Aplicacion
 {
@@ -54,76 +55,55 @@ class Aplicacion
             return false;
         }
     }
-    private function insertarUsuario($usuario)
+    public function objectOutDatabase($objeto){
+        if (is_a($objeto, "Usuario")) {
+            return false;
+        }else if (is_a($objeto, "Mission")) {
+            return $this->eliminarMision($objeto);
+        } else {
+            echo "El objeto no pertenece a ninguna clase conocida";
+            return false;
+        }
+    }
+    private function executeQuery($query, $params, $types)
     {
         $db = $this->getConexionBd();
-        $usuario->setId($this->nextIdUsuario());
-        $sqlQuery = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        if ($stmt = mysqli_prepare($db, $sqlQuery)) {
-            echo "hola";
-            $hashedPassword = password_hash($usuario->getPassword(), PASSWORD_BCRYPT);
-            $developerDefault=false;
-            mysqli_stmt_bind_param(
-                $stmt,
-                "isssis",
-                $usuario->getId(),
-                $usuario->getUsername(),
-                $usuario->getEmail(),
-                $hashedPassword,
-                $developerDefault,
-                $usuario->getImg()
-            );
-            
+        if ($stmt = mysqli_prepare($db, $query)) {
+            mysqli_stmt_bind_param($stmt, $types, ...$params);
             $result = mysqli_stmt_execute($stmt);
-            
             mysqli_stmt_close($stmt);
-
-            if ($result) {
-                return true;
-            } else {
-                error_log("Error al insertar el usuario: " . mysqli_error($db));
-                return false;
-            }
+            return $result;
         } else {
             error_log("Error al preparar la consulta: " . mysqli_error($db));
             return false;
         }
     }
+    private function insertarUsuario($usuario)
+    {
+        $usuario->setId($this->nextId("users"));
+        $hashedPassword = password_hash($usuario->getPassword(), PASSWORD_BCRYPT);
+        $query = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
+        return $this->executeQuery($query, [$usuario->getId(), $usuario->getUsername(), $usuario->getEmail(), $hashedPassword, false, $usuario->getImg()], "isssis");
+    }
     private function insertarMision($mision)
     {
-        $db = $this->getConexionBd();
-        $mision->setId($this->nextIdMision());
-        $sqlQuery = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        if ($stmt = mysqli_prepare($db, $sqlQuery)) {
-            $hashedPassword = password_hash($mision->getPassword(), PASSWORD_BCRYPT);
-            $dockerlocation="/TODO";
-            mysqli_stmt_bind_param(
-                $stmt,
-                "isssss",
-                $mision->getId(),
-                $mision->getName(),
-                $mision->getDescription(),
-                $mision->getTags(),
-                $mision->getIcon(),
-                $dockerlocation
-            );
-            
-            $result = mysqli_stmt_execute($stmt);
-            
-            mysqli_stmt_close($stmt);
+        $mision->setId($this->nextId("ctfs"));
+        $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $mision->getTags()))]);
+        $query = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
+        return $this->executeQuery($query, [$mision->getId(), $mision->getName(), $mision->getDescription(), $tagsJson, $mision->getIcon(), "/TODO"], "isssss");
+    }
+    private function eliminarMision($mision)
+    {
+        $query = "DELETE FROM ctfs WHERE id = ?";
+        return $this->executeQuery($query, [$mision->getId()], "i");
+    }
 
-            if ($result) {
-                return true;
-            } else {
-                error_log("Error al insertar la mision: " . mysqli_error($db));
-                return false;
-            }
-        } else {
-            error_log("Error al preparar la consulta: " . mysqli_error($db));
-            return false;
-        }
+    public function addAdmin($user){
+        $userId = $user["id"]; // ID del usuario que quieres actualizar
+        $developer = 1; // Nuevo valor para el campo developer
+        $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
+    
+        return $this->executeQuery($sqlQuery, [$developer, $userId], 'ii');
     }
     public function logueaUsuario($user, $password)
     {
@@ -134,48 +114,40 @@ class Aplicacion
                 return $usuarioAComprobar;
             } else {
                 
-                return false;
+                return null;
             }
         }
+        return null;
+    }
+    private function nextId($table)
+    {
+        $db = $this->getConexionBd();
+        $query = "SELECT MAX(id) + 1 AS next_id FROM $table";
+        $result = mysqli_query($db, $query);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_free_result($result);
+        return $row['next_id'] ?? 1;
+    }
+    private function fetchAll($query)
+{
+    $db = $this->getConexionBd();
+    $result = mysqli_query($db, $query);
+
+    $data = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+        mysqli_free_result($result); // Liberar el resultado
     }
 
-    private function nextIdUsuario()
-    {
-        $db = $this->getConexionBd();
-        $maxIDquery = "SELECT MAX(id) FROM users";
-        $resultmaxIDquery = mysqli_query($db, $maxIDquery);
-        $row = mysqli_fetch_row($resultmaxIDquery);
-        $maxId = $row[0];
-        mysqli_free_result($resultmaxIDquery);
-        return $maxId + 1;
-    }
-    private function nextIdMision()
-    {
-        $db = $this->getConexionBd();
-        $maxIDquery = "SELECT MAX(id) FROM ctfs";
-        $resultmaxIDquery = mysqli_query($db, $maxIDquery);
-        $row = mysqli_fetch_row($resultmaxIDquery);
-        $maxId = $row[0];
-        mysqli_free_result($resultmaxIDquery);
-        return $maxId + 1;
-    }
+    return $data;
+}
+
     public function getAllUsers()
     {
-        $db = $this->getConexionBd();
-        $sql = "SELECT id, username,email, password, developer, icon FROM users";
-        $result = mysqli_query($db, $sql);
-
-        if (mysqli_num_rows($result) > 0) {
-            $users = array();
-            while ($row = mysqli_fetch_assoc($result)) {
-
-                $users[] = $row; // Add complete user data to the array
-            }
-            mysqli_free_result($result);
-            return $users;
-        } else {
-            return null;
-        }
+        return $this->fetchAll("SELECT id, username, email, password, developer, icon FROM users");
+    
     }
     public function getUser($nombreUsuario, $email)
     {
@@ -193,7 +165,7 @@ class Aplicacion
 
         return null;
     }
-    public function getMission($nombre)
+    public function getMission($nombre, $id) //se puede buscar por nombre o id
     {
         $missions = $this->getAllMissions();
 
@@ -202,7 +174,7 @@ class Aplicacion
         }
 
         foreach ($missions as $mission) {
-            if (($mission['username'] === $nombre)) {
+            if (($mission['name'] === $nombre) || ($mission['id'] === $id)) {
                 return $mission; // Return the complete user data
             }
         }
@@ -211,41 +183,13 @@ class Aplicacion
     }
     public function getAllMissions()
     {
-        $db = $this->getConexionBd();
-        $sql = "SELECT id, name,description,tags,icon,dockerlocation FROM ctfs";
-        $result = mysqli_query($db, $sql);
-
-        if (mysqli_num_rows($result) > 0) {
-            $missions = array();
-            while ($row = mysqli_fetch_assoc($result)) {
-
-                $missions[] = $row; // Add complete user data to the array
-            }
-            mysqli_free_result($result);
-            return $missions;
-        } else {
-            return null;
-        }
+        return $this->fetchAll("SELECT id, name, description, tags, icon, dockerlocation FROM ctfs");
+  
     }
     public function getAllTags()
     {
-        $db = $this->getConexionBd();
-        $sql = "SELECT tagname FROM tags";
-        $result = mysqli_query($db, $sql);
-
-        if (mysqli_num_rows($result) > 0) {
-            $tags = array();
-            $i = 0;
-            while ($row = mysqli_fetch_assoc($result)) {
-
-                $tags[$i] = $row["tagname"]; // Add complete user data to the array
-                $i++;
-            }
-            mysqli_free_result($result);
-            return $tags;
-        } else {
-            return null;
-        }
+        $result = $this->fetchAll("SELECT tagname FROM tags");
+        return array_column($result, "tagname");
     }
     
 }
