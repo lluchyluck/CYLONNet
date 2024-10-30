@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ ."/form.php";
+require_once __DIR__ ."/../../objects/usuario.php";
 
 class FormRegister extends Form {
     public function handle() {
@@ -94,12 +95,13 @@ class FormRegister extends Form {
     }
 
     private function registrarUsuario($user) {
+        
         if ($this->app->getUser($user->getUsername(), $user->getEmail()) !== null) {
+            
             $this->setMessageAndRedirect("Error en el registro: el usuario ya está registrado.");
             return false;
         }
-        
-        if ($this->app->objectToDataBase($user)) {
+        if ($user->insertarDB($this->app)) {
             $this->setMessageAndRedirect("Registro exitoso. Ahora puedes iniciar sesión.");
             return true;
         } else {

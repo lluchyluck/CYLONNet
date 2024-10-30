@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ ."/form.php";
+require_once __DIR__ ."/../../objects/usuario.php";
 
 class FormAddAdmin extends Form {
     public function handle() {
@@ -10,10 +11,11 @@ class FormAddAdmin extends Form {
         if (!$this->validateInputs($nombre_usuario)) {
             return;
         }
-        if($this->addAdmin($nombre_usuario)){
+        $usuario = new Usuario($nombre_usuario);
+        if($usuario->ascenderAdmin($this->app)){
             $this->setMessageAndRedirect("Ahora $nombre_usuario es administrador!!!");
         }
-        $this->setMessageAndRedirect("Error al añadir administrador, intentalo de nuevo!!!");
+        $this->setMessageAndRedirect("Error al añadir administrador, el usuario introducido no existe!!!");
     }
 
     private function validateInputs($nombre_usuario) {
@@ -28,16 +30,5 @@ class FormAddAdmin extends Form {
         }
 
         return true;
-    }
-    private function addAdmin($name){
-        
-        if(($user = $this->app->getUser($name,"")) !== null){
-            
-            return $this->app->addAdmin($user);
-        }
-        return false;
-    }
-    
-
-   
+    } 
 }

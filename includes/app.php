@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__ ."/src/objects/usuario.php";
-require_once __DIR__ ."/src/objects/mission.php";
-
 class Aplicacion
 {
 
@@ -44,82 +41,28 @@ class Aplicacion
             return false;
         }
     }
-    public function objectToDataBase($objeto)
-    {
-        if (is_a($objeto, "Usuario")) {
-            return $this->insertarUsuario($objeto);
-        }else if (is_a($objeto, "Mission")) {
-            return $this->insertarMision($objeto);
-        } else {
-            echo "El objeto no pertenece a ninguna clase conocida";
-            return false;
-        }
-    }
-    public function objectOutDatabase($objeto){
-        if (is_a($objeto, "Usuario")) {
-            return false;
-        }else if (is_a($objeto, "Mission")) {
-            return $this->eliminarMision($objeto);
-        } else {
-            echo "El objeto no pertenece a ninguna clase conocida";
-            return false;
-        }
-    }
-    private function executeQuery($query, $params, $types)
+    public function executeQuery($query, $params, $types)
     {
         $db = $this->getConexionBd();
-        if ($stmt = mysqli_prepare($db, $query)) {
-            mysqli_stmt_bind_param($stmt, $types, ...$params);
-            $result = mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-            return $result;
-        } else {
+        
+        if (!$stmt = mysqli_prepare($db, $query)) {
             error_log("Error al preparar la consulta: " . mysqli_error($db));
             return false;
         }
-    }
-    private function insertarUsuario($usuario)
-    {
-        $usuario->setId($this->nextId("users"));
-        $hashedPassword = password_hash($usuario->getPassword(), PASSWORD_BCRYPT);
-        $query = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
-        return $this->executeQuery($query, [$usuario->getId(), $usuario->getUsername(), $usuario->getEmail(), $hashedPassword, false, $usuario->getImg()], "isssis");
-    }
-    private function insertarMision($mision)
-    {
-        $mision->setId($this->nextId("ctfs"));
-        $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $mision->getTags()))]);
-        $query = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
-        return $this->executeQuery($query, [$mision->getId(), $mision->getName(), $mision->getDescription(), $tagsJson, $mision->getIcon(), "/TODO"], "isssss");
-    }
-    private function eliminarMision($mision)
-    {
-        $query = "DELETE FROM ctfs WHERE id = ?";
-        return $this->executeQuery($query, [$mision->getId()], "i");
-    }
-
-    public function addAdmin($user){
-        $userId = $user["id"]; // ID del usuario que quieres actualizar
-        $developer = 1; // Nuevo valor para el campo developer
-        $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
-    
-        return $this->executeQuery($sqlQuery, [$developer, $userId], 'ii');
-    }
-    public function logueaUsuario($user, $password)
-    {
-
-        if (($usuarioAComprobar = $this->getUser($user, "")) !== null) {
-               
-            if (password_verify($password,$usuarioAComprobar["password"])) {
-                return $usuarioAComprobar;
-            } else {
-                
-                return null;
-            }
+        if (!mysqli_stmt_bind_param($stmt, $types, ...$params)) {
+            error_log("Error al vincular parámetros: " . mysqli_stmt_error($stmt));
+            mysqli_stmt_close($stmt);
+            return false;
         }
-        return null;
+        if (!$result = mysqli_stmt_execute($stmt)) 
+            error_log("Error al ejecutar la consulta: " . mysqli_stmt_error($stmt));
+        mysqli_stmt_close($stmt);
+        
+        return $result;
     }
-    private function nextId($table)
+
+   
+    public function nextId($table)
     {
         $db = $this->getConexionBd();
         $query = "SELECT MAX(id) + 1 AS next_id FROM $table";
@@ -129,20 +72,20 @@ class Aplicacion
         return $row['next_id'] ?? 1;
     }
     private function fetchAll($query)
-{
-    $db = $this->getConexionBd();
-    $result = mysqli_query($db, $query);
+    {
+        $db = $this->getConexionBd();
+        $result = mysqli_query($db, $query);
 
-    $data = [];
-    if ($result) {
-        while ($row = mysqli_fetch_assoc($result)) {
-            $data[] = $row;
+        $data = [];
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $data[] = $row;
+            }
+            mysqli_free_result($result); // Liberar el resultado
         }
-        mysqli_free_result($result); // Liberar el resultado
-    }
 
-    return $data;
-}
+        return $data;
+    }
 
     public function getAllUsers()
     {

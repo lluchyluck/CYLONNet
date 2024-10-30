@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ ."/form.php";
-
+require_once __DIR__ ."/../../objects/mission.php";
 class FormRemoveMission extends Form {
     
 
@@ -17,9 +17,9 @@ class FormRemoveMission extends Form {
        
         
        
+        $mission = new Mission($name);
         
-        
-        $this->eliminarMision($name);
+        $this->eliminarMision($mission);
         
     }
 
@@ -39,13 +39,14 @@ class FormRemoveMission extends Form {
         return true;
     }
 
-    private function eliminarMision($name) {
-        if (($mision = $this->app->getMission($name,null)) === null) {        
+    private function eliminarMision($mision) {
+        if (($data = $this->app->getMission($mision->getName(),null)) === null) {        
             $this->setMessageAndRedirect("La misión no está registrada, no se eliminará nada.");
             return false;
         }
-        
-        if ($this->app->objectOutDataBase($mision)) {
+        print_r($data);
+        $mision->setId($data["id"]);
+        if ($mision->eliminarDB($this->app)) {
             $this->setMessageAndRedirect("Misión eliminada exitosamente.");
             return true;
         } else {

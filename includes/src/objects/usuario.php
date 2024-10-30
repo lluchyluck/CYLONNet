@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ ."/../../config.php";
 
 class Usuario
 {
@@ -7,19 +8,53 @@ class Usuario
     private $username;
     private $email;
     private $password;
+    private $developer;
     private $img;
 
     // Constructor para inicializar las propiedades
-    public function __construct($username, $password, $email, $img)
-    {
+    public function __construct($username, $password = null, $email = null, $img = null)
+    {   
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
         $this->img = $img;
-        
     }
     
-    
+    public function insertarDB($app)
+    {   
+        
+        $this->setId($app->nextId("users"));
+        $this->setDeveloper(0); //El valor por defecto para un nuevo usuario de developer es 0
+        $hashedPassword = password_hash($this->getPassword(), PASSWORD_BCRYPT);
+
+        $query = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
+        return $app->executeQuery($query, [$this->getId(), $this->getUsername(), $this->getEmail(), $hashedPassword, false, $this->getImg()], "isssis");
+    }
+    public function autenticar($app){
+        if (($usuarioAComprobar = $app->getUser($this->getUsername(), "")) !== null) {   
+            if (password_verify($this->getPassword(),$usuarioAComprobar["password"])) {
+                $this->setId($usuarioAComprobar["id"]);
+                $this->setEmail($usuarioAComprobar["email"]);
+                $this->setDeveloper((bool)$usuarioAComprobar["developer"]);
+                $this->setImg($usuarioAComprobar["icon"]);
+                return true;
+            }  
+        }
+        return false;
+    }
+    public function ascenderAdmin($app){
+        
+        if(($user = $app->getUser($this->getUsername(),"")) !== null){
+            
+            $this->setId($user["id"]); // ID del usuario que quieres actualizar
+            $this->setDeveloper(1); // Nuevo valor para el campo developer         
+            $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
+            return $app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
+        }
+        return false;
+       
+    }
+
     // Métodos getters para acceder a las propiedades
     public function getId()
     {
@@ -35,7 +70,10 @@ class Usuario
     {
         return $this->password;
     }
-
+    public function getDeveloper()
+    {
+        return $this->developer;
+    }
     public function getImg()
     {
         return $this->img;
@@ -61,7 +99,10 @@ class Usuario
     {
         $this->password = $password;
     }
-
+    public function setDeveloper($developer)
+    {
+        $this->developer = (bool)$developer;
+    }
     public function setImg($img)
     {
         $this->img = $img;

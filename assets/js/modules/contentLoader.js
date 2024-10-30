@@ -183,7 +183,7 @@ function loadLoginContent() {
         <input type="text" name="username" placeholder="Username" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
         <button type="submit" name="login_button" class="button">Login</button>
-      </form>F
+      </form>
       <p>¿No estás registrado?: <a href="javascript:void(0)" onclick="loadContent('register')">regístrate</a></p>
     </div>
   `);

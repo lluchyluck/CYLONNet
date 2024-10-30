@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ ."/../../config.php";
 class Mission
 {
     // Propiedades privadas para encapsular los datos
@@ -11,7 +11,7 @@ class Mission
     private $dockerlocation;
 
     // Constructor para inicializar las propiedades
-    public function __construct($name,$description, $tags, $icon, $dockerlocation)
+    public function __construct($name,$description = null, $tags= null, $icon= null, $dockerlocation= null)
     {
         $this->name = $name;
         $this->description = $description;
@@ -19,7 +19,18 @@ class Mission
         $this->icon = $icon;
         $this->dockerlocation = $dockerlocation;
     }
-    
+    public function insertarDB($app)
+    {
+        $this->setId($app->nextId("ctfs"));
+        $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
+        $query = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
+        return $app->executeQuery($query, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getIcon(), "/TODO"], "isssss");
+    }
+    public function eliminarDB($app)
+    {
+        $query = "DELETE FROM ctfs WHERE id = ?";
+        return $app->executeQuery($query, [$this->getId()], "i");
+    }
     
     // Métodos getters para acceder a las propiedades
     public function getId()

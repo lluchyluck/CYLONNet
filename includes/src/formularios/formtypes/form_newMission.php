@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ ."/form.php";
+require_once __DIR__ ."/../../objects/mission.php";
 
 class FormNewMission extends Form {
     private $maxDescriptionChars = 500;
@@ -100,7 +101,7 @@ class FormNewMission extends Form {
             return false;
         }
         
-        if ($this->app->objectToDataBase($mision)) {
+        if ($mision->insertarDB($this->app)) {
             $this->setMessageAndRedirect("Registro exitoso. Ahora puedes ver tu misión.");
             return true;
         } else {
