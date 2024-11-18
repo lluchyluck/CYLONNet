@@ -135,14 +135,15 @@ function showMissionPopup(title, description, image, id) {
     <div class="mission-popup">
       <div class="mission-image">
        <img src="${image}" alt="Misión">
+       <div class="mission-popup-content">
+          <span class="close-popup">&times;</span>
+          <h2>${title}</h2>
+          <h3>Mission Details:</h3>
+          <p>${description}</p>
+          <button class="button start-mission">Start Mission</button>
+        </div>
       </div>
-      <div class="mission-popup-content">
-        <span class="close-popup">&times;</span>
-        <h2>${title}</h2>
-        <h3>Mission Details:</h3>
-        <p>${description}</p>
-        <button class="button start-mission">Start Mission</button>
-      </div>
+      
     </div>
   `;
 
@@ -271,8 +272,7 @@ function loadDeveloperContent() {
           </div>
       </div>
 
-      <div class="box">
-          
+      <div class="box"> 
           <span class="toggle-label">
               <strong>Eliminar Misión</strong>
               <span class="arrow">▼</span>
@@ -283,6 +283,22 @@ function loadDeveloperContent() {
               <form id="remove-mission" action="../includes/src/formularios/formHandler.php" method="POST">
                   <input type="text" name="mission_name" placeholder="Nombre de la misión" required><br>
                   <button type="submit" name="remove_mission_button" class="button">Eliminar Misión</button>
+              </form>
+          </div>
+      </div>
+
+
+      <div class="box"> 
+          <span class="toggle-label">
+              <strong>Eliminar Administrador</strong>
+              <span class="arrow">▼</span>
+          </span>
+          <br><br>
+
+          <div class="toggle-content">
+              <form id="remove-admin" action="../includes/src/formularios/formHandler.php" method="POST">
+                  <input type="text" name="admin_name" placeholder="Nombre de usuario del administrador" required><br>
+                  <button type="submit" name="remove_admin_button" class="button">Eliminar Administrador</button>
               </form>
           </div>
       </div>

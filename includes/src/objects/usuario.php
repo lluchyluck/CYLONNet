@@ -54,6 +54,18 @@ class Usuario
         return false;
        
     }
+    public function descenderAdmin($app){
+        
+        if(($user = $app->getUser($this->getUsername(),"")) !== null){
+            
+            $this->setId($user["id"]); // ID del usuario que quieres actualizar
+            $this->setDeveloper(0); // Nuevo valor para el campo developer         
+            $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
+            return $app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
+        }
+        return false;
+       
+    }
 
     // Métodos getters para acceder a las propiedades
     public function getId()

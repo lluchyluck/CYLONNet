@@ -9,14 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     if (($mission = $app->getMission("", $missionId)) !== null) {
         $containerName = $mission["dockerlocation"];
         // Comando para iniciar el contenedor
-        $command = "docker start " . escapeshellarg($containerName);
+        $command = escapeshellcmd("./../../assets/sh/deploy.sh ./../../assets/sh/labos/mi_labo_prueba.tar");
         
         // Ejecutar el comando
-        $output = shell_exec("ls");
+        $output = shell_exec($command);
         if ($output !== null) {
             echo "$output";
         } else {
-            echo "Failed to start container.";
+            echo "Failed to start container";
         }
     } else {
         echo "Invalid mission ID.";

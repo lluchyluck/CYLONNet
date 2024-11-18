@@ -232,6 +232,7 @@ input[type="email"]:focus,
 }
 
 .mission-popup {
+  
   position: fixed;
   top: 0;
   left: 0;
@@ -258,6 +259,7 @@ input[type="email"]:focus,
   position: relative;
   word-wrap: break-word; /* Asegura el salto de línea en palabras largas */
   margin-right: 20px;
+  margin-left: 20px;
 }
 
 .mission-popup-content h2 {
@@ -422,23 +424,21 @@ textarea:focus {
   margin-right: 20px; /* Espacio entre la imagen y el contenido de la misión */
   display: flex; /* Usar flexbox para centrar la imagen si es necesario */
   align-items: center; /* Centrar verticalmente la imagen */
-  border: 1px solid #FFD700; /* Borde dorado alrededor de la imagen */
+
   border-radius: 8px; /* Bordes redondeados */
   overflow: hidden; /* Asegura que el contenido no se desborde */
   background-color: rgba(0, 0, 0, 0.7); /* Fondo semitransparente oscuro */
-  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.5); /* Sombra para dar profundidad */
 }
 
 .mission-image img {
-  width: 100%;/* Ajusta el tamaño máximo de la imagen al contenedor */
-  height: auto; /* Mantiene la proporción de la imagen */
+  width: auto;/* Ajusta el tamaño máximo de la imagen al contenedor */
+  height: 700px; /* Mantiene la proporción de la imagen */
   border-radius: 8px; /* Bordes redondeados */
   transition: transform 0.3s, box-shadow 0.3s; /* Transición suave para efectos */
 }
 
 .mission-image img:hover {
-  transform: scale(1.05); /* Efecto de zoom al pasar el cursor */
-  box-shadow: 0 6px 15px rgba(255, 215, 0, 0.7); /* Sombra más intensa al pasar el cursor */
+  transform: scale(1.01); /* Efecto de zoom al pasar el cursor */
 }
 .mission-image,.mission-popup-content {
   flex: 1; /* O puedes usar flex: 0 1 auto; para mantener su tamaño */
