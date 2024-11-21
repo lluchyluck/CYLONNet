@@ -12,7 +12,9 @@ class FormNewMission extends Form {
         $description = filter_input(INPUT_POST, 'mission_description', FILTER_SANITIZE_STRING);
         $tags = filter_input(INPUT_POST, 'mission_tags', FILTER_SANITIZE_STRING);
         $img = ($_FILES["image"]["size"] !== 0) ? $_FILES["image"] : null;
-        $dockerLoc = "/TODO";
+        $docker = ($_FILES["docker_file"]["size"] !== 0) ? $_FILES["docker_file"] : null;
+
+        
         
         if (!$this->validateInputs($name, $description, $tags, $img)) {
             return;
@@ -20,7 +22,10 @@ class FormNewMission extends Form {
         
         $imagenRuta = ($img !== null) ? $this->handleImageUpload($img) : "/default.jpg";
         
-        if ($imagenRuta === false) {
+
+        $dockerLoc = ($docker !== null) ? $this->handleDockerUpload($docker) : "/NULL";
+        
+        if ($imagenRuta === false || $dockerLoc === false) {
             return;
         }
         $mision = new Mission($name, $description, $tags, $imagenRuta, $dockerLoc);
@@ -66,6 +71,16 @@ class FormNewMission extends Form {
         }
 
         return "/" . basename($img["name"]);
+    }
+    private function handleDockerUpload($docker) {
+        $ruta_destino = $_SERVER['DOCUMENT_ROOT'] . "/CYLONNet/assets/sh/labos/" . basename($docker["name"]);
+
+        if (!move_uploaded_file($docker['tmp_name'], $ruta_destino)) {
+            $this->setMessageAndRedirect("Error al guardar el archivo docker en el servidor.");
+            return false;
+        }
+
+        return "/" . basename($docker["name"]);
     }
 
     private function validateImage($image) {

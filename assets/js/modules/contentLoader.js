@@ -222,6 +222,43 @@ function selectDeveloperContent() {
     }
   });
 }
+// Configuración del tamaño de cada fragmento en bytes
+const CHUNK_SIZE = 10 * 1024 * 1024; // 25MB
+
+function uploadDockerFile(file, missionName) {
+  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+  
+  // Subir cada fragmento
+  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+    const start = chunkIndex * CHUNK_SIZE;
+    const end = Math.min(start + CHUNK_SIZE, file.size);
+    const chunk = file.slice(start, end);
+
+    // Crear un FormData para enviar el fragmento
+    const formData = new FormData();
+    formData.append('file', chunk);
+    formData.append('chunkIndex', chunkIndex);  // Índice del fragmento
+    formData.append('totalChunks', totalChunks);  // Total de fragmentos
+    formData.append('fileName', file.name);  // Nombre del archivo
+    formData.append('missionName', missionName);  // Nombre de la misión (para asociar el archivo con la misión)
+
+    // Realizar la solicitud AJAX para enviar el fragmento
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', './../includes/src/upload.php', true);  // Ajusta la URL de destino según tu servidor
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        console.log(`Fragmento ${chunkIndex + 1} de ${totalChunks} subido con éxito`);
+      } else {
+        console.error(`Error al subir el fragmento ${chunkIndex + 1}`);
+      }
+    };
+    xhr.onerror = function () {
+      console.error('Error en la solicitud AJAX');
+    };
+    xhr.send(formData);
+  }
+}
+
 function loadDeveloperContent() {
   $('#content').html(`
     <div class="box">
@@ -247,7 +284,7 @@ function loadDeveloperContent() {
                   <input type="file" id="icon_select" name="image" accept=".png,.jpg,.jpeg,.gif" required><br><br>
 
                   <label for="docker_file">Selecciona un archivo Docker:</label><br>
-                  <input type="file" id="docker_file" name="docker_file" accept=".dockerfile,.tar,.zip"><br><br>
+                  <input type="file" id="docker_file" name="docker_file" accept=".tar.gz" required><br><br>
                   <button type="submit" name="add_mission_button" class="button">Añadir Misión</button>
               </form>
           </div>
@@ -305,6 +342,22 @@ function loadDeveloperContent() {
 
     </div>
   `);
+  $('#add-mission').submit(function (event) {
+    event.preventDefault();  // Evitar el envío del formulario de forma tradicional
+
+    const missionName = $('input[name="mission_name"]').val();
+    const dockerFileInput = $('#docker_file')[0];
+    
+    if (dockerFileInput.files.length === 0) {
+      alert("Por favor, selecciona un archivo Docker.");
+      return;
+    }
+
+    const dockerFile = dockerFileInput.files[0];
+
+    // Subir el archivo Docker fragmentado
+    uploadDockerFile(dockerFile, missionName);
+  });
   $('.toggle-label').click(function() {
     const arrow = $(this).find('.arrow'); 
     const isVisible = $(this).siblings('.toggle-content').is(':visible'); 
@@ -357,6 +410,8 @@ function loadDeveloperContent() {
     }
   });
 }
+
+
 function loadNotDeveloperContent() {
   $('#content').html(`
     <div class="box">
