@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     if (($mission = $app->getMission("", $missionId)) !== null) {
         $containerName = $mission["dockerlocation"];
         // Comando para iniciar el contenedor
-        $command = escapeshellcmd("./../../assets/sh/deploy.sh ./../../assets/sh/labos/mi_labo_prueba.tar");
+        $command = escapeshellcmd("./../../assets/sh/deploy.sh ./../../assets/sh/labos$containerName");
         
         // Ejecutar el comando
         $output = shell_exec($command);
