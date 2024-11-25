@@ -1,23 +1,21 @@
 function loadContent(page) {
+  const pageLoaders = {
+    home: loadHomeContent,
+    missions: loadMissionsContent,
+    login: loadLoginContent,
+    register: loadRegisterContent,
+    developer: selectDeveloperContent,
+  };
+
   $('#content').empty();
-  switch (page) {
-    case 'home':
-      loadHomeContent();
-      break;
-    case 'missions':
-      loadMissionsContent();
-      break;
-    case 'login':
-      loadLoginContent();
-      break;
-    case 'register':
-      loadRegisterContent();
-      break;
-    case 'developer':
-      selectDeveloperContent();
-      break;
+  const loaderFunction = pageLoaders[page];
+  if (loaderFunction) {
+    loaderFunction();
+  } else {
+    console.error(`No se encuentra la página requerida`);
   }
 }
+
 
 function loadHomeContent() {
   $('#content').html(`
@@ -222,13 +220,89 @@ function selectDeveloperContent() {
     }
   });
 }
-// Configuración del tamaño de cada fragmento en bytes
-const CHUNK_SIZE = 10 * 1024 * 1024; // 25MB
+function showUploadProgressPopup() {
+  // Crear el contenedor del popup
+  const popup = document.createElement('div');
+  popup.id = 'upload-progress-popup';
+  popup.style.cssText = `
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #FFD700;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: #FFD700;
+  font-family: 'Courier New', monospace;
+  z-index: 1000;
+`;
 
-function uploadDockerFile(file, missionName) {
+  // Crear el círculo de progreso
+  const circle = document.createElement('div');
+  circle.style.cssText = `
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 10px solid rgba(255, 215, 0, 0.3);
+  border-top: 10px solid #FFD700;
+  animation: spin 1s linear infinite;
+`;
+  circle.id = 'progress-circle';
+
+  // Crear el texto de progreso
+  const progressText = document.createElement('div');
+  progressText.id = 'progress-text';
+  progressText.style.cssText = `
+  font-size: 18px;
+  font-weight: bold;
+  color: #FFD700;
+  margin-top: 10px;
+`;
+  progressText.textContent = '0%';
+
+  // Agregar círculo y texto al popup
+  popup.appendChild(circle);
+  popup.appendChild(progressText);
+
+  // Insertar el popup en el documento
+  document.body.appendChild(popup);
+
+  // Agregar animación CSS al documento
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function updateProgressPopup(currentChunk, totalChunks) {
+  const progress = Math.round((currentChunk / totalChunks) * 100);
+  const progressText = document.getElementById('progress-text');
+  if (progressText) {
+    progressText.textContent = `${progress}%`;
+  }
+}
+
+function closeProgressPopup() {
+  const popup = document.getElementById('upload-progress-popup');
+  if (popup) {
+    document.body.removeChild(popup);
+  }
+}
+
+// Configuración del tamaño de cada fragmento en bytes
+const CHUNK_SIZE = 20 * 1024 * 1024; // 10 MB
+
+async function uploadDockerFile(file, missionName, description, tags, icon) {
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-  
-  // Subir cada fragmento
+  showUploadProgressPopup();
+
   for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
     const start = chunkIndex * CHUNK_SIZE;
     const end = Math.min(start + CHUNK_SIZE, file.size);
@@ -236,28 +310,55 @@ function uploadDockerFile(file, missionName) {
 
     // Crear un FormData para enviar el fragmento
     const formData = new FormData();
+    formData.append('missionName', missionName);
+    if (chunkIndex === 0) {
+      formData.append('descripcion', description);
+      formData.append('tags', tags);
+      formData.append('icon', icon);
+    }
+    formData.append('fileName', file.name);
+    formData.append('chunkIndex', chunkIndex);
+    formData.append('totalChunks', totalChunks);
     formData.append('file', chunk);
-    formData.append('chunkIndex', chunkIndex);  // Índice del fragmento
-    formData.append('totalChunks', totalChunks);  // Total de fragmentos
-    formData.append('fileName', file.name);  // Nombre del archivo
-    formData.append('missionName', missionName);  // Nombre de la misión (para asociar el archivo con la misión)
 
-    // Realizar la solicitud AJAX para enviar el fragmento
+    try {
+      await uploadChunk(formData, chunkIndex, totalChunks); // Espera a que se complete la subida
+    } catch (error) {
+      console.error(`Error al subir el fragmento ${chunkIndex + 1}: ${error}`);
+      closeProgressPopup();
+      break; // Salir del bucle en caso de error
+    }
+  }
+  closeProgressPopup();
+}
+
+function uploadChunk(formData, chunkIndex, totalChunks) {
+  return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', './../includes/src/upload.php', true);  // Ajusta la URL de destino según tu servidor
+    xhr.open('POST', './../includes/src/upload.php', true);
+
     xhr.onload = function () {
-      if (xhr.status === 200) {
+      if (xhr.status === 200 && xhr.responseText === "OK") {
         console.log(`Fragmento ${chunkIndex + 1} de ${totalChunks} subido con éxito`);
+        updateProgressPopup(chunkIndex + 1, totalChunks);
+
+        if (chunkIndex + 1 === totalChunks) {
+          closeProgressPopup();
+        }
+        resolve(); // Subida exitosa
       } else {
-        console.error(`Error al subir el fragmento ${chunkIndex + 1}`);
+        reject(`${xhr.responseText}`);
       }
     };
+
     xhr.onerror = function () {
-      console.error('Error en la solicitud AJAX');
+      reject('Error en la solicitud AJAX');
     };
+
     xhr.send(formData);
-  }
+  });
 }
+
 
 function loadDeveloperContent() {
   $('#content').html(`
@@ -281,7 +382,7 @@ function loadDeveloperContent() {
                   </select><br>
                   
                   <label for="icon_select">Selecciona un icono:</label><br>
-                  <input type="file" id="icon_select" name="image" accept=".png,.jpg,.jpeg,.gif" required><br><br>
+                  <input type="file" id="icon_select" name="icon_select" accept=".png,.jpg,.jpeg,.gif" required><br><br>
 
                   <label for="docker_file">Selecciona un archivo Docker:</label><br>
                   <input type="file" id="docker_file" name="docker_file" accept=".tar.gz" required><br><br>
@@ -347,16 +448,23 @@ function loadDeveloperContent() {
 
     const missionName = $('input[name="mission_name"]').val();
     const dockerFileInput = $('#docker_file')[0];
-    
+    const description = $('textarea[name="mission_description"]').val();
+    const tags = $('textarea[name="mission_tags"]').val();
+    const iconData = $('#icon_select')[0]
+
     if (dockerFileInput.files.length === 0) {
       alert("Por favor, selecciona un archivo Docker.");
       return;
     }
+    if (iconData.files.length === 0) {
+      alert("Por favor, selecciona una imagen.");
+      return;
+    }
 
     const dockerFile = dockerFileInput.files[0];
-
+    const image = iconData.files[0];
     // Subir el archivo Docker fragmentado
-    uploadDockerFile(dockerFile, missionName);
+    uploadDockerFile(dockerFile, missionName,description,tags,image);
   });
   $('.toggle-label').click(function() {
     const arrow = $(this).find('.arrow'); 

@@ -1,58 +1,164 @@
 <?php
-// Ruta del directorio donde se almacenarán los fragmentos de docker temporalmente
-$uploadDir = './uploads/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
+require_once "./../config.php";
+require_once __DIR__ . "./../src/objects/mission.php";
+
+function registrarMision($mision, $app)
+{
+    if ($app->getMission($mision->getName(), null)) {
+        return false;
+    }
+
+    if ($mision->insertarDB($app)) {
+        return true;
+    }
+
+    echo "Error al insertar en la DB";
+    return false;
 }
 
-// Recibir el fragmento
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Verifica si el archivo y los datos del fragmento están presentes
-    if (isset($_FILES['file']) && isset($_POST['chunkIndex']) && isset($_POST['totalChunks']) && isset($_POST['fileName'])) {
+function validateImage($image)
+{
+    $allowedMimeTypes = ['image/jpeg', 'image/png'];
+    $fileType = mime_content_type($image['tmp_name']);
+
+    if (!in_array($fileType, $allowedMimeTypes)) {
+        echo "Tipo de archivo no permitido. Solo se permiten imágenes JPEG y PNG.";
+        return false;
+    }
+
+    if ($image['size'] > 2 * 1024 * 1024) {
+        echo "El tamaño de la imagen no debe superar los 2 MB.";
+        return false;
+    }
+
+    list($width, $height) = getimagesize($image['tmp_name']);
+    if ($width > 1000 || $height > 1000) {
+        echo "La imagen no debe exceder 1000x1000 píxeles.";
+        return false;
+    }
+
+    if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z]+)$/', $image['name'])) {
+        echo "El nombre de la imagen solo puede contener letras, números y guiones bajos.";
+        return false;
+    }
+
+    return true;
+}
+
+function handleImageUpload($img)
+{
+    $rutaDestino = $_SERVER['DOCUMENT_ROOT'] . "/CYLONNet/assets/images/missions/" . basename($img['name']);
+
+    if (!move_uploaded_file($img['tmp_name'], $rutaDestino)) {
+        echo "Error al guardar la imagen en el servidor.";
+        return false;
+    }
+
+    return "/" . basename($img['name']);
+}
+
+function validateInputs($name, $description, $tags, $image)
+{
+    if (empty($name) || empty($description) || empty($tags)) {
+        echo "Por favor, completa todos los campos.";
+        return false;
+    }
+
+    if (strlen($description) > 500) {
+        echo "La descripción no puede exceder 500 caracteres.";
+        return false;
+    }
+
+    if (strlen($tags) < 8) {
+        echo "La etiqueta debe tener al menos 8 caracteres.";
+        return false;
+    }
+
+    if (!preg_match('/^[a-zA-Z0-9_ ]+$/', $name)) {
+        echo "El nombre de la misión solo puede contener letras, números y guiones bajos.";
+        return false;
+    }
+
+    return $image === null || validateImage($image);
+}
+
+function handleMission($app)
+{
+    $name = filter_input(INPUT_POST, 'missionName', FILTER_SANITIZE_STRING);
+    $description = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
+    $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_STRING);
+    $img = ($_FILES['icon']['size'] !== 0) ? $_FILES['icon'] : null;
+    $dockerLoc = "/" . basename($_POST['fileName']);
+
+    if (!validateInputs($name, $description, $tags, $img)) {
+        return false;
+    }
+
+    $imagenRuta = $img ? handleImageUpload($img) : "/default.jpg";
+    if ($imagenRuta === false) {
+        return false;
+    }
+
+    $mision = new Mission($name, $description, $tags, $imagenRuta, $dockerLoc);
+    return registrarMision($mision, $app);
+}
+
+function upload($app)
+{
+    $uploadDir = './uploads/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
         $chunkIndex = intval($_POST['chunkIndex']);
         $totalChunks = intval($_POST['totalChunks']);
-        $fileName = basename($_POST['fileName']);  // Obtener el nombre original del archivo
-        $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;  // Ruta temporal para almacenar cada fragmento
-        
-        // Mover el archivo temporal a la ubicación deseada
+        $fileName = basename($_POST['fileName']);
+        $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
+
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
-            echo "Fragmento $chunkIndex subido con éxito.";
-
-            // Comprobar si todos los fragmentos han sido subidos
-            $allChunksUploaded = true;
-            for ($i = 0; $i < $totalChunks; $i++) {
-                if (!file_exists($uploadDir . $fileName . '.part' . $i)) {
-                    $allChunksUploaded = false;
-                    break;
-                }
+            if ($chunkIndex === 0 && !handleMission($app)) {
+                return false;
             }
 
-            // Si todos los fragmentos están disponibles, combinar los fragmentos
-            if ($allChunksUploaded) {
-                // Crear un archivo de destino final
-                $dockerPath = "./../../assets/sh/labos/";
-                $finalFilePath = $dockerPath . $fileName;
-                $finalFile = fopen($finalFilePath, 'wb');
-                
-                // Combinar los fragmentos
-                for ($i = 0; $i < $totalChunks; $i++) {
-                    $partFile = fopen($uploadDir . $fileName . '.part' . $i, 'rb');
-                    while (!feof($partFile)) {
-                        fwrite($finalFile, fread($partFile, 1024));  // Escribir contenido de cada fragmento en el archivo final
-                    }
-                    fclose($partFile);
-                    // Eliminar el fragmento después de escribirlo
-                    unlink($uploadDir . $fileName . '.part' . $i);
-                }
-
-                fclose($finalFile);
-                echo 'Archivo combinado con éxito: ' . $finalFilePath;
+            if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) {
+                combineChunks($uploadDir, $fileName, $totalChunks);
             }
+            echo "OK";
         } else {
-            echo "Error al subir el fragmento $chunkIndex.";
+            echo "Error al subir el fragmento número " . $chunkIndex;
         }
     } else {
-        echo "Faltan datos necesarios.";
+        echo "ERROR";
     }
 }
-?>
+
+function allChunksUploaded($uploadDir, $fileName, $totalChunks)
+{
+    for ($i = 0; $i < $totalChunks; $i++) {
+        if (!file_exists($uploadDir . $fileName . '.part' . $i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function combineChunks($uploadDir, $fileName, $totalChunks)
+{
+    $dockerPath = "./../../assets/sh/labos/";
+    $finalFilePath = $dockerPath . $fileName;
+    $finalFile = fopen($finalFilePath, 'wb');
+
+    for ($i = 0; $i < $totalChunks; $i++) {
+        $partFile = fopen($uploadDir . $fileName . '.part' . $i, 'rb');
+        while (!feof($partFile)) {
+            fwrite($finalFile, fread($partFile, 1024));
+        }
+        fclose($partFile);
+        unlink($uploadDir . $fileName . '.part' . $i);
+    }
+
+    fclose($finalFile);
+}
+
+upload($app);
