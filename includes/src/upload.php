@@ -5,6 +5,7 @@ require_once __DIR__ . "./../src/objects/mission.php";
 function registrarMision($mision, $app)
 {
     if ($app->getMission($mision->getName(), null)) {
+        echo "Ya existe una mision con ese nombre!!!";
         return false;
     }
 
@@ -31,13 +32,13 @@ function validateImage($image)
         return false;
     }
 
-    list($width, $height) = getimagesize($image['tmp_name']);
+    [$width, $height] = getimagesize($image['tmp_name']);
     if ($width > 1000 || $height > 1000) {
         echo "La imagen no debe exceder 1000x1000 píxeles.";
         return false;
     }
 
-    if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z]+)$/', $image['name'])) {
+    if (!preg_match('/^[a-zA-Z0-9_]+\.[a-zA-Z]{2,4}$/', $image['name'])) {
         echo "El nombre de la imagen solo puede contener letras, números y guiones bajos.";
         return false;
     }
@@ -87,8 +88,8 @@ function handleMission($app)
     $name = filter_input(INPUT_POST, 'missionName', FILTER_SANITIZE_STRING);
     $description = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
     $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_STRING);
-    $img = ($_FILES['icon']['size'] !== 0) ? $_FILES['icon'] : null;
-    $dockerLoc = "/" . basename($_POST['fileName']);
+    $img = ($_FILES['icon']['size'] > 0) ? $_FILES['icon'] : null;
+    $dockerLoc = "/" . basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
 
     if (!validateInputs($name, $description, $tags, $img)) {
         return false;
@@ -106,14 +107,15 @@ function handleMission($app)
 function upload($app)
 {
     $uploadDir = './uploads/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
+        echo "Error al crear el directorio de subida.";
+        return;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
         $chunkIndex = intval($_POST['chunkIndex']);
         $totalChunks = intval($_POST['totalChunks']);
-        $fileName = basename($_POST['fileName']);
+        $fileName = basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
         $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
 
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
@@ -147,10 +149,26 @@ function combineChunks($uploadDir, $fileName, $totalChunks)
 {
     $dockerPath = "./../../assets/sh/labos/";
     $finalFilePath = $dockerPath . $fileName;
+
+    if (!is_dir($dockerPath) && !mkdir($dockerPath, 0755, true) && !is_dir($dockerPath)) {
+        echo "Error al crear el directorio de destino.";
+        return;
+    }
+
     $finalFile = fopen($finalFilePath, 'wb');
+    if ($finalFile === false) {
+        echo "Error al abrir el archivo final.";
+        return;
+    }
 
     for ($i = 0; $i < $totalChunks; $i++) {
         $partFile = fopen($uploadDir . $fileName . '.part' . $i, 'rb');
+        if ($partFile === false) {
+            echo "Error al abrir el fragmento número " . $i;
+            fclose($finalFile);
+            return;
+        }
+
         while (!feof($partFile)) {
             fwrite($finalFile, fread($partFile, 1024));
         }

@@ -29,7 +29,7 @@ class FormRemoveMission extends Form {
             return false;
         }
 
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
+        if (!preg_match('/^[a-zA-Z0-9_ ]+$/', $name)) {
             $this->setMessageAndRedirect("El nombre de la misión solo puede contener letras, números y guiones bajos.");
             return false;
         }

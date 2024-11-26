@@ -262,10 +262,18 @@ function showUploadProgressPopup() {
   margin-top: 10px;
 `;
   progressText.textContent = '0%';
-
+  // Crear el texto de respuesta
+  const responseText = document.createElement('div');
+  responseText.id = 'response-text';
+  responseText.style.cssText = `
+  font-size: 14px;
+  color: #FFD700;
+  margin-top: 10px;
+  `;
   // Agregar círculo y texto al popup
   popup.appendChild(circle);
   popup.appendChild(progressText);
+  popup.appendChild(responseText);
 
   // Insertar el popup en el documento
   document.body.appendChild(popup);
@@ -295,6 +303,13 @@ function closeProgressPopup() {
     document.body.removeChild(popup);
   }
 }
+function updateTextPopup(message) {
+  const responseTextElement = document.getElementById('response-text');
+  if (responseTextElement) {
+    responseTextElement.textContent = message;
+  }
+}
+
 
 // Configuración del tamaño de cada fragmento en bytes
 const CHUNK_SIZE = 20 * 1024 * 1024; // 10 MB
@@ -329,7 +344,10 @@ async function uploadDockerFile(file, missionName, description, tags, icon) {
       break; // Salir del bucle en caso de error
     }
   }
-  closeProgressPopup();
+  updateTextPopup(`Archivo subido con éxito!!!`);
+  setTimeout(() => {
+    closeProgressPopup();
+  }, 10000);
 }
 
 function uploadChunk(formData, chunkIndex, totalChunks) {
@@ -347,6 +365,7 @@ function uploadChunk(formData, chunkIndex, totalChunks) {
         }
         resolve(); // Subida exitosa
       } else {
+        updateTextPopup(`Fragmento ${chunkIndex + 1}: Error - ${xhr.responseText}`);
         reject(`${xhr.responseText}`);
       }
     };
