@@ -50,7 +50,7 @@
     </div>
     <div id="message-box"></div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="../assets/js/modules/contentLoader.js"></script>
+    <script type="module" src="../assets/js/modules/contentHandler.js"></script>
     <script src="../assets/js/modules/user.js"></script>
     <script src="../assets/js/modules/animations.js"></script>
     <script src="../assets/js/modules/menu.js"></script>

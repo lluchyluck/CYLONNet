@@ -126,7 +126,7 @@ class Aplicacion
     }
     public function getAllMissions()
     {
-        return $this->fetchAll("SELECT id, name, description, tags, icon, dockerlocation FROM ctfs");
+        return $this->fetchAll("SELECT c.id, c.name, c.description, c.tags, c.icon, c.dockerlocation, u.username FROM ctfs c LEFT JOIN userxctf x ON c.id = x.id_ctf LEFT JOIN users u ON u.id = x.id_user;");
   
     }
     public function getAllTags()

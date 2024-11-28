@@ -23,8 +23,9 @@ class Mission
     {
         $this->setId($app->nextId("ctfs"));
         $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
-        $query = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
-        return $app->executeQuery($query, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getIcon(), $this->getDockerloc()], "isssss");
+        $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
+        $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
+        return ($app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getIcon(), $this->getDockerloc()], "isssss")) && ($app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
     }
     public function eliminarDB($app)
     {

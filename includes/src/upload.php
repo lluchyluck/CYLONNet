@@ -70,8 +70,8 @@ function validateInputs($name, $description, $tags, $image)
         return false;
     }
 
-    if (strlen($tags) < 8) {
-        echo "La etiqueta debe tener al menos 8 caracteres.";
+    if (strlen($tags) < 1) {
+        echo "Debe de haber al menos alguna etiqueta!!!";
         return false;
     }
 
