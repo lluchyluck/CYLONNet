@@ -117,12 +117,12 @@ function upload($app)
         $totalChunks = intval($_POST['totalChunks']);
         $fileName = basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
         $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
-
+        
+        if ($chunkIndex === 0 && !handleMission($app)) {
+            return false;
+        }
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
-            if ($chunkIndex === 0 && !handleMission($app)) {
-                return false;
-            }
-
+            
             if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) {
                 combineChunks($uploadDir, $fileName, $totalChunks);
             }
