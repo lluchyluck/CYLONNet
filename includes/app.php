@@ -41,7 +41,7 @@ class Aplicacion
             return false;
         }
     }
-    public function executeQuery($query, $params, $types)
+    public function executeQuery($query, $params, $types, &$output = null)
     {
         $db = $this->getConexionBd();
         
@@ -49,17 +49,39 @@ class Aplicacion
             error_log("Error al preparar la consulta: " . mysqli_error($db));
             return false;
         }
+
         if (!mysqli_stmt_bind_param($stmt, $types, ...$params)) {
             error_log("Error al vincular parámetros: " . mysqli_stmt_error($stmt));
             mysqli_stmt_close($stmt);
             return false;
         }
-        if (!$result = mysqli_stmt_execute($stmt)) 
+
+        if (!mysqli_stmt_execute($stmt)) {
             error_log("Error al ejecutar la consulta: " . mysqli_stmt_error($stmt));
+            mysqli_stmt_close($stmt);
+            return false;
+        }
+
+        // Si el parámetro $output no es null, vinculamos las columnas del resultado
+        if ($output !== null) {
+            $result = mysqli_stmt_get_result($stmt);
+            if ($result) {
+                $output = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $output[] = $row;
+                }
+                mysqli_free_result($result);
+            } else {
+                error_log("Error al obtener el resultado: " . mysqli_stmt_error($stmt));
+                mysqli_stmt_close($stmt);
+                return false;
+            }
+        }
+
         mysqli_stmt_close($stmt);
-        
-        return $result;
+        return true;
     }
+
 
    
     public function nextId($table)
@@ -107,6 +129,13 @@ class Aplicacion
         }
 
         return null;
+    }
+    public function getUserMissions($username){
+        $query = "SELECT c.id, c.name, c.tags, c.icon FROM ctfs c JOIN userxctf x ON c.id = x.id_ctf JOIN users u ON x.id_user = u.id WHERE u.username = ? AND x.completado = 1";
+        $output = [];
+        if($this->executeQuery($query, [$username], "s",$output))
+            return $output;
+        return false;
     }
     public function getMission($nombre, $id) //se puede buscar por nombre o id
     {

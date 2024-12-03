@@ -2,14 +2,14 @@
 require_once("../../config.php");
 
 // Ejecutar la función para obtener las misiones
-$missions = $app->getAllMissions();
+$user = $app->getAllMissions();
 
-if (is_null($missions) || empty($missions)) {
+if (is_null($user) || empty($user)) {
     // Si no hay misiones, devolver un mensaje o un array vacío
-    $missions = ['error' => 'No missions available'];
+    $user = ['error' => 'No missions available'];
 }
 
 
 // Devolver las misiones en formato JSON
 header('Content-Type: application/json');
-echo json_encode($missions);
+echo json_encode($user);
