@@ -5,6 +5,7 @@ export async function loadContent(page) {
     login: () => import('./content/login.js').then(module => module.loadLoginContent()),
     register: () => import('./content/register.js').then(module => module.loadRegisterContent()),
     developer: () => import('./content/developer.js').then(module => module.selectDeveloperContent()),
+    profile: () => import('./content/profile.js').then(module => module.loadProfileContent()),
   };
 
   $('#content').empty();

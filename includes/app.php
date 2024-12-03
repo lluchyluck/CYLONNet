@@ -66,10 +66,7 @@ class Aplicacion
         if ($output !== null) {
             $result = mysqli_stmt_get_result($stmt);
             if ($result) {
-                $output = [];
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $output[] = $row;
-                }
+                $output = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 mysqli_free_result($result);
             } else {
                 error_log("Error al obtener el resultado: " . mysqli_stmt_error($stmt));
@@ -133,8 +130,9 @@ class Aplicacion
     public function getUserMissions($username){
         $query = "SELECT c.id, c.name, c.tags, c.icon FROM ctfs c JOIN userxctf x ON c.id = x.id_ctf JOIN users u ON x.id_user = u.id WHERE u.username = ? AND x.completado = 1";
         $output = [];
-        if($this->executeQuery($query, [$username], "s",$output))
+        if($this->executeQuery($query, [$username], "s",$output)){
             return $output;
+        }
         return false;
     }
     public function getMission($nombre, $id) //se puede buscar por nombre o id

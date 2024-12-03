@@ -1,3 +1,5 @@
+import { loadProfileContent } from './profile.js';
+
 export function loadMissionsContent() {
     $('#content').html(`
       <div class="box">
@@ -37,7 +39,7 @@ export function loadMissionsContent() {
                 <div class="tags-box">
                   <strong>Tags:</strong> <span>${tagsList}</span>
                 </div>
-                <p><strong>Creador:</strong>${mission.username}</p>
+                <p><strong>Creador:</strong><span class="mission-username" data-username="${mission.username}">${mission.username}</span></p>
                 <h4 style="display: none;">${mission.id}</h4>
               </div>
               <button class="button see-contract">See Contract</button>
@@ -45,7 +47,10 @@ export function loadMissionsContent() {
           `;
           missionGrid.append(missionBox);
         });
-  
+        $('.mission-username').on('click', function() {
+          const username = $(this).data('username'); // Obtener el username del atributo 'data-username'
+          loadProfileContent(username); // Llamar a la función con el username
+        });
         // Añadir eventos y lógica para los botones
         $('.see-contract').click(function () {
           const missionTitle = $(this).closest('.mission-box').find('h3').text();
