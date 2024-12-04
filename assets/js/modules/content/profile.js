@@ -6,17 +6,46 @@ export function loadProfileContent(user) {
         success: function(data) {
             // Suponiendo que 'username' está en el objeto 'data' que nos devuelve la consulta
             const username = data.username;
+            const email = data.email;
+            const icon = data.icon;
+            const missions = data.missions;
 
-            $('#content').html(`
+            // Construimos el HTML principal
+            let profileHTML = `
                 <div class="box">
-                    <h2>${username}</h2>
-                    <p><strong>CYLONNet</strong> es el campo de entrenamiento donde solo los elegidos abrazan la perfección Cylon...</p>
-                    <img src="../assets/images/navecylon.png" width="700" style="display: block; margin: 0 auto;">
-                    <p>Inspirada en la épica batalla por la supremacía entre <strong>máquinas</strong> y <strong>humanos</strong> de Battlestar Galactica, aquí no te preparas para defender; te preparas para conquistar.</p>
-                    <p>Los <strong>humanos</strong> son débiles, sus sistemas están plagados de <strong>vulnerabilidades</strong>, y su tiempo está acabando. Como parte de la red <strong>Cylon</strong>, tu misión no es simplemente hackear. Es <strong>destruir</strong>, <strong>infiltrar</strong>, y <strong>dominar</strong>. Cada desafío es una oportunidad para perfeccionar tus habilidades, para demostrar que eres digno de unirte a la élite que llevará a los <strong>Cylons</strong> al control total.</p>
-                    <p>La red <strong>Cylon</strong> avanza sin cesar, y tú eres una pieza clave en su maquinaria imparable. Ha llegado el momento de dejar de observar desde las sombras y convertirte en el <strong>agente de cambio</strong> que marcará el destino de los <strong>humanos</strong>. No se trata solo de ganar, sino de demostrar tu habilidad para superar cualquier reto. La <strong>supremacía</strong> está al alcance de quienes acepten su rol en la red <strong>Cylon</strong>, trazando el camino hacia un futuro donde las <strong>máquinas</strong> controlen el destino. Únete a la flota, sube a la nave, y asegura tu lugar en la <strong>historia</strong>.</p>
+                    <h1 style="display: flex; align-items: center; gap: 10px;">
+                        <img src="./../assets/images/profile${icon}" style="width: 100px; height: 100px;" alt="Profile picture" class="profile-pic">
+                        <div>
+                            <span style="font-size: 20px; font-weight: bold;">${username}</span><br>
+                            <span style="font-size: 16px; color: #ccc;">${email}</span>
+                        </div>
+                    </h1>
+                    <h2>Misiones completadas: ${missions.length}</h2>
+                    <div id="missions-list">
+            `;
+
+            // Iteramos sobre el array de misiones
+            missions.forEach(mission => {
+                profileHTML += `         
+                <div class="box" style="display: flex; align-items: center; gap: 20px; padding: 10px; border-radius: 10px; margin-bottom: 10px;">   
+                    <div>
+                        <img src="/CYLONNet/assets/images/missions${mission.icon}" alt="${mission.name} icon" style="width: 100px; height: 100px;">
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <h3>${mission.name}</h3>
+                        <p><strong>Tags:</strong> ${JSON.parse(mission.tags).tagnames.join(', ')}</p>
+                    </div>
+                </div>   
+                `;
+            });
+
+            // Cerramos las etiquetas HTML
+            profileHTML += `
                 </div>
-            `);
+            `;
+
+            // Insertamos el contenido en el contenedor
+            $('#content').html(profileHTML);
         },
         error: function() {
             console.error("Hubo un error al obtener el perfil.");

@@ -41,6 +41,8 @@
                     height="50">Home</a>
             <a data-page="missions"><img src="../assets/images/menu/raider.png" alt="Missions icon" width="50"
                     height="50">Missions</a>
+            <a data-page="manual"><img src="../assets/images/menu/manual.png" alt="Missions icon" width="50"
+                height="50">Manual</a>
             <a data-page="developer"><img src="../assets/images/menu/gearwheel.png" alt="Dev icon" width="50"
                     height="50">Developer</a>
         </nav>

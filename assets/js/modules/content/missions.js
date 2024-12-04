@@ -39,7 +39,7 @@ export function loadMissionsContent() {
                 <div class="tags-box">
                   <strong>Tags:</strong> <span>${tagsList}</span>
                 </div>
-                <p><strong>Creador:</strong><span class="mission-username" data-username="${mission.username}">${mission.username}</span></p>
+                <p><strong>Creador:</strong><span class="mission-username"  style="cursor: pointer; color: inherit; transition: color 0.3s ease;" onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';" data-username="${mission.username}">${mission.username}</span></p>
                 <h4 style="display: none;">${mission.id}</h4>
               </div>
               <button class="button see-contract">See Contract</button>
