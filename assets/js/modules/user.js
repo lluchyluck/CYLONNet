@@ -13,3 +13,7 @@ function logout() {
   $('#dropdown-email').text('Not logged in');
   loadContent('home');
 }
+
+function profile(username){
+  loadContent('profile', username);
+}

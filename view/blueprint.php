@@ -28,11 +28,10 @@
         </div>
     </div>
     <div class="profile-dropdown" id="profile-dropdown">
-        <h3>Profile</h3>
+        <h3 onclick="profile('<?php if ($_SESSION['login'] === true) echo $_SESSION['username']; ?>')" style="cursor: pointer; color: inherit; transition: color 0.3s ease;" onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';">Profile</h3>
         <p>Username: <span id="dropdown-username">Guest</span></p>
-        <p>Email: <span id="dropdown-email">Not logged in</span></p>
-        
-            <?php if($_SESSION["login"] === true)  echo '<form action="../includes/src/formularios/formHandler.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>'; else echo '<button onclick="loadContent(\'login\')" class="button">Login</button>'; ?>
+        <p>Email: <span id="dropdown-email">Not logged in</span></p>   
+        <?php if($_SESSION["login"] === true)  echo '<form action="../includes/src/formularios/formHandler.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>'; else echo '<button onclick="loadContent(\'login\')" class="button">Login</button>'; ?>
        
     </div>
     <div class="main-container">

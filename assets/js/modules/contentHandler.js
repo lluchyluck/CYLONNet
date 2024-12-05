@@ -1,11 +1,12 @@
-export async function loadContent(page) {
+export async function loadContent(page, options = null) {
   const pageLoaders = {
     home: () => import('./content/home.js').then(module => module.loadHomeContent()),
     missions: () => import('./content/missions.js').then(module => module.loadMissionsContent()),
     login: () => import('./content/login.js').then(module => module.loadLoginContent()),
     register: () => import('./content/register.js').then(module => module.loadRegisterContent()),
     developer: () => import('./content/developer.js').then(module => module.selectDeveloperContent()),
-    profile: () => import('./content/profile.js').then(module => module.loadProfileContent()),
+    profile: () => import('./content/profile.js').then(module => module.loadProfileContent(options)), // Pasamos el username aquí
+    manual: () => import('./content/manual.js').then(module => module.loadManualContent()),
   };
 
   $('#content').empty();
@@ -22,6 +23,5 @@ export async function loadContent(page) {
     $('#content').append('<p>Página no encontrada, esto no es un bugbounty piratilla!!!.</p>');
   }
 }
-
 
 window.loadContent = loadContent;
