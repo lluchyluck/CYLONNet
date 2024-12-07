@@ -58,7 +58,7 @@ function handleImageUpload($img)
     return "/" . basename($img['name']);
 }
 
-function validateInputs($name, $description, $tags, $image)
+function validateInputs($name, $description, $tags, $difficulty, $image)
 {
     if (empty($name) || empty($description) || empty($tags)) {
         echo "Por favor, completa todos los campos.";
@@ -74,7 +74,10 @@ function validateInputs($name, $description, $tags, $image)
         echo "Debe de haber al menos alguna etiqueta!!!";
         return false;
     }
-
+    if(($difficulty > 5)  || ($difficulty < 1)){
+        echo "La dificultad debe de estar entre 1 y 5!!!.";
+        return false;
+    }
     if (!preg_match('/^[a-zA-Z0-9_ ]+$/', $name)) {
         echo "El nombre de la misión solo puede contener letras, números y guiones bajos.";
         return false;
@@ -88,10 +91,11 @@ function handleMission($app)
     $name = filter_input(INPUT_POST, 'missionName', FILTER_SANITIZE_STRING);
     $description = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
     $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_STRING);
+    $difficulty = filter_input(INPUT_POST, 'difficulty', FILTER_VALIDATE_INT);
     $img = ($_FILES['icon']['size'] > 0) ? $_FILES['icon'] : null;
     $dockerLoc = "/" . basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
 
-    if (!validateInputs($name, $description, $tags, $img)) {
+    if (!validateInputs($name, $description, $tags,$difficulty, $img)) {
         return false;
     }
 
@@ -100,7 +104,7 @@ function handleMission($app)
         return false;
     }
 
-    $mision = new Mission($name, $description, $tags, $imagenRuta, $dockerLoc);
+    $mision = new Mission($name, $description, $tags, $difficulty,$imagenRuta, $dockerLoc);
     return registrarMision($mision, $app);
 }
 

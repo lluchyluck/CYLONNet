@@ -7,15 +7,17 @@ class Mission
     private $name;
     private $description;
     private $tags;
+    private $difficulty;
     private $icon;
     private $dockerlocation;
 
     // Constructor para inicializar las propiedades
-    public function __construct($name,$description = null, $tags= null, $icon= null, $dockerlocation= null)
+    public function __construct($name,$description = null, $tags= null, $difficulty = null, $icon= null, $dockerlocation= null)
     {
         $this->name = $name;
         $this->description = $description;
         $this->tags = $tags;
+        $this->difficulty = $difficulty;
         $this->icon = $icon;
         $this->dockerlocation = $dockerlocation;
     }
@@ -23,9 +25,9 @@ class Mission
     {
         $this->setId($app->nextId("ctfs"));
         $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
-        $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?)";
+        $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, difficulty, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
-        return ($app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getIcon(), $this->getDockerloc()], "isssss")) && ($app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
+        return ($app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
     }
     public function eliminarDB($app)
     {
@@ -48,7 +50,10 @@ class Mission
     {
         return $this->tags;
     }
-
+    public function getDifficulty()
+    {
+        return $this->difficulty;
+    }
     public function getIcon()
     {
         return $this->icon;
@@ -78,6 +83,10 @@ class Mission
     public function setTags($tag)
     {
         $this->tags = $tag;
+    }
+    public function setDifficulty($difficulty)
+    {
+        $this->difficulty = $difficulty;
     }
 
     public function setIcon($icon)

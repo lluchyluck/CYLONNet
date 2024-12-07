@@ -8,15 +8,17 @@ class Usuario
     private $username;
     private $email;
     private $password;
+    private $xp;
     private $developer;
     private $img;
 
     // Constructor para inicializar las propiedades
-    public function __construct($username, $password = null, $email = null, $img = null)
+    public function __construct($username, $password = null, $xp = 0, $email = null, $img = null)
     {   
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
+        $this->xp = $xp;
         $this->img = $img;
     }
     
@@ -27,14 +29,15 @@ class Usuario
         $this->setDeveloper(0); //El valor por defecto para un nuevo usuario de developer es 0
         $hashedPassword = password_hash($this->getPassword(), PASSWORD_BCRYPT);
 
-        $query = "INSERT INTO users (id, username, email, password, developer, icon) VALUES (?, ?, ?, ?, ?, ?)";
-        return $app->executeQuery($query, [$this->getId(), $this->getUsername(), $this->getEmail(), $hashedPassword, false, $this->getImg()], "isssis");
+        $query = "INSERT INTO users (id, username, email, password, xp, developer, icon) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return $app->executeQuery($query, [$this->getId(), $this->getUsername(), $this->getEmail(), $hashedPassword, 0, false, $this->getImg()], "isssiis");
     }
     public function autenticar($app){
         if (($usuarioAComprobar = $app->getUser($this->getUsername(), "")) !== null) {   
             if (password_verify($this->getPassword(),$usuarioAComprobar["password"])) {
                 $this->setId($usuarioAComprobar["id"]);
                 $this->setEmail($usuarioAComprobar["email"]);
+                $this->setXp($usuarioAComprobar["xp"]);
                 $this->setDeveloper((bool)$usuarioAComprobar["developer"]);
                 $this->setImg($usuarioAComprobar["icon"]);
                 return true;
@@ -82,6 +85,11 @@ class Usuario
     {
         return $this->password;
     }
+    public function getXp()
+    {
+        return $this->xp;
+    }
+
     public function getDeveloper()
     {
         return $this->developer;
@@ -111,6 +119,11 @@ class Usuario
     {
         $this->password = $password;
     }
+    public function setXp($xp)
+    {
+        $this->xp = $xp;
+    }
+
     public function setDeveloper($developer)
     {
         $this->developer = (bool)$developer;

@@ -17,15 +17,22 @@ export function loadProfileContent(user) {
                     const email = data.email;
                     const icon = data.icon;
                     const missions = data.missions;
+                    const xp = data.xp;
+                    const level = calculateLevel(xp).currentLevel;                 
+                    const levelImg = rankImage(level);
 
                     // Construimos el HTML principal
                     let profileHTML = `
                         <div class="box">
                             <h1 style="display: flex; align-items: center; gap: 10px;">
-                                <img src="./../assets/images/profile${icon}" style="width: 100px; height: 100px;" alt="Profile picture" class="profile-pic">
+                                <div class="profile-pic-container">
+                                    <img src="./../assets/images/profile${icon}" style="width: 100px; height: 100px;" alt="Profile picture" class="profile-pic">
+                                    <img id="rank-badge-user" class="rank-badge" src="${levelImg}" style="height: 70px; width: auto;">
+                                </div>
                                 <div>
                                     <span style="font-size: 20px; font-weight: bold;">${username}</span><br>
-                                    <span style="font-size: 16px; color: #ccc;">${email}</span>
+                                    <span style="font-size: 16px; color: #ccc;">${email}</span><br>
+                                    <span style="font-size: 20px; font-weight: bold;">Rank: ${level}</span>
                                 </div>
                             </h1>
                             <h2>Misiones completadas: ${missions.length}</h2>
@@ -37,6 +44,13 @@ export function loadProfileContent(user) {
                         if (!mission.icon || !mission.name || !mission.tags) {
                             throw new Error("Una de las misiones tiene datos incompletos.");
                         }
+                        // Generar estrellas según la dificultad
+                        const maxStars = 5; // Número máximo de estrellas
+                        const starIcon = '★'; // Ícono de estrella personalizado
+                        const emptyStarIcon = '☆'; // Ícono para estrellas vacías
+                        const filledStars = starIcon.repeat(mission.difficulty);
+                        const emptyStars = emptyStarIcon.repeat(maxStars - mission.difficulty);
+                        const difficultyStars = filledStars + emptyStars;
 
                         const tags = JSON.parse(mission.tags).tagnames.join(', ');
                         profileHTML += `
@@ -45,8 +59,9 @@ export function loadProfileContent(user) {
                                 <img src="/CYLONNet/assets/images/missions${mission.icon}" alt="${mission.name} icon" style="width: 100px; height: 100px;">
                             </div>
                             <div style="display: flex; flex-direction: column;">
-                                <h3>${mission.name}</h3>
-                                <p><strong>Tags:</strong> ${tags}</p>
+                                <div><h3>${mission.name}</h3></div>
+                                <div><strong>Tags:</strong> ${tags}</div>
+                                <div><strong>Difficulty: </strong><span style="font-size: 28px;">${difficultyStars}</span></div>
                             </div>
                         </div>
                         `;

@@ -38,6 +38,7 @@ class FormLogin extends Form {
         $_SESSION["id"] = $user->getId();
         $_SESSION["username"] = $user->getUsername();
         $_SESSION["email"] = $user->getEmail();
+        $_SESSION["xp"] = $user->getXp();
         $_SESSION["developer"] = (bool)$user->getDeveloper();
         $_SESSION["icon"] = $user->getImg();
     }

@@ -28,6 +28,10 @@ html {
   align-items: center;
 }
 
+.profile-pic-container {
+  position: relative; /* Contenedor relativo para la posición de la insignia */
+}
+
 .profile-pic {
   width: 50px;
   height: 50px;
@@ -35,6 +39,17 @@ html {
   margin-right: 15px;
   border: 2px solid #FFD700;
 }
+
+.rank-badge {
+  position: absolute;
+  top: 23%; /* Centrar verticalmente */
+  left: 73%; /* Centrar horizontalmente */
+  transform: translate(-50%, -50%); /* Ajustar para centrar desde el medio */
+  height: 40px; 
+  width: auto;
+  border-radius: 50%;
+}
+
 
 .main-container {
   display: flex;
@@ -185,7 +200,7 @@ input[type="email"]:focus,
 .profile-dropdown {
   position: absolute;
   top: 70px;
-  left: 20px;
+  right: 20px;
   background-color: rgba(0, 0, 0, 0.9);
   border: 1px solid #FFD700;
   padding: 20px;
@@ -442,4 +457,63 @@ textarea:focus {
 }
 .mission-image,.mission-popup-content {
   flex: 1; /* O puedes usar flex: 0 1 auto; para mantener su tamaño */
+}
+/* Contenedor principal centrado */
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+}
+
+/* Contenedor de la barra de experiencia */
+.experience-bar-container {
+  width: 30%; /* Ajusta según tu diseño */
+  max-width: 800px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto; /* Centra horizontalmente */
+  position: relative;
+}
+
+/* Barra de progreso */
+.experience-bar {
+  height: 100%;
+  background-color: #FFD700;
+  width: 0%; /* Ajusta el progreso */
+  transition: width 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+/* Nivel centrado debajo de la barra */
+.level-text {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #FFD700;
+  text-align: center;
+}
+.leaderboard-list {
+  list-style: none; /* Elimina los números predeterminados */
+  padding-left: 0;
+  counter-reset: leaderboard-counter; /* Inicializa un contador personalizado */
+}
+
+.leaderboard-list li {
+  display: flex;
+  align-items: center;
+  font-size: 1.2em; /* Ajusta el tamaño del texto de los elementos */
+  margin-bottom: 10px;
+  counter-increment: leaderboard-counter; /* Incrementa el contador personalizado */
+}
+
+.leaderboard-list li::before {
+  content: counter(leaderboard-counter) "."; /* Inserta el contador personalizado */
+  font-size: 1.5em; /* Aumenta el tamaño del número */
+  font-weight: bold; /* Haz el número más visible */
+  color: #ffd700; /* Color dorado para destacarlo */
+  margin-right: 10px; /* Espaciado entre el número y el contenido */
 }

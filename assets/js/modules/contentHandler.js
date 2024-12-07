@@ -7,6 +7,7 @@ export async function loadContent(page, options = null) {
     developer: () => import('./content/developer.js').then(module => module.selectDeveloperContent()),
     profile: () => import('./content/profile.js').then(module => module.loadProfileContent(options)), // Pasamos el username aquí
     manual: () => import('./content/manual.js').then(module => module.loadManualContent()),
+    leaderboard: () => import('./content/leaderboard.js').then(module => module.loadLeaderBoardContent()),
   };
 
   $('#content').empty();

@@ -114,7 +114,7 @@ export function selectDeveloperContent() {
   // Configuración del tamaño de cada fragmento en bytes
   const CHUNK_SIZE = 20 * 1024 * 1024; // 10 MB
   
-  async function uploadDockerFile(file, missionName, description, tags, icon) {
+  async function uploadDockerFile(file, missionName, description, tags, difficulty, icon) {
     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
     showUploadProgressPopup();
   
@@ -129,6 +129,7 @@ export function selectDeveloperContent() {
       if (chunkIndex === 0) {
         formData.append('descripcion', description);
         formData.append('tags', tags);
+        formData.append('difficulty', difficulty);
         formData.append('icon', icon);
       }
       formData.append('fileName', file.name);
@@ -202,6 +203,16 @@ export function selectDeveloperContent() {
                     <select class="tag-filter" id="tag-filter">
                       <option value="">All Tags</option>
                     </select><br>
+
+                    <label for="diff_select">Selecciona Dificultad:</label><br>
+                    <select name="mission_difficulty" class="difficulty-filter" id="difficulty-filter">
+                      <option value="">Selecciona dificultad</option>
+                      <option value="1">(*)Muy Facil</option>
+                      <option value="2">(**)Facil</option>
+                      <option value="3">(***)Medio</option>
+                      <option value="4">(****)Dificil</option>
+                      <option value="5">(*****)No lo consigue ni chema alonso</option>
+                    </select><br><br>
                     
                     <label for="icon_select">Selecciona un icono:</label><br>
                     <input type="file" id="icon_select" name="icon_select" accept=".png,.jpg,.jpeg,.gif" required><br><br>
@@ -272,6 +283,7 @@ export function selectDeveloperContent() {
       const dockerFileInput = $('#docker_file')[0];
       const description = $('textarea[name="mission_description"]').val();
       const tags = $('textarea[name="mission_tags"]').val();
+      const difficulty = $('select[name="mission_difficulty"]').val();
       const iconData = $('#icon_select')[0]
   
       if (dockerFileInput.files.length === 0) {
@@ -286,7 +298,7 @@ export function selectDeveloperContent() {
       const dockerFile = dockerFileInput.files[0];
       const image = iconData.files[0];
       // Subir el archivo Docker fragmentado
-      uploadDockerFile(dockerFile, missionName,description,tags,image);
+      uploadDockerFile(dockerFile, missionName,description,tags, difficulty,image);
     });
     $('.toggle-label').click(function() {
       const arrow = $(this).find('.arrow'); 

@@ -78,7 +78,7 @@ function animateStarfield() {
 // Función para animar el texto aleatorio
 function startTextAnimation() {
   const targetText = "CYLONNet";
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:',.<>?/~`-=\\";
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_+[]{}|:',.?~`-=\\";
   const textElement = document.querySelector("#animated-text h1"); // Selecciona el <h1> dentro del div
 
   let iterations = 0;

@@ -12,6 +12,7 @@ if(($_SESSION["login"] === true) && isset($_GET["username"])){
         $missions = $app->getUserMissions($_GET["username"]);
         $returnUser["username"] = $user["username"];
         $returnUser["email"] = $user["email"];
+        $returnUser["xp"] = (int)$user["xp"];
         $returnUser["icon"] = $user["icon"];
         $returnUser["missions"] = $missions;
     }
