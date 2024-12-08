@@ -1,3 +1,4 @@
+import { loadContent } from '../contentHandler.js';
 import { loadProfileContent } from './profile.js';
 
 export function loadMissionsContent() {
@@ -50,6 +51,7 @@ export function loadMissionsContent() {
                 <p><strong>Creador:</strong><span class="mission-username"  style="cursor: pointer; color: inherit; transition: color 0.3s ease;" onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';" data-username="${mission.username}">${mission.username}</span></p>
                 <h4 style="display: none;">${mission.id}</h4>
               </div>
+              <button class="button submit-flag">Submit Flag</button>
               <button class="button see-contract">See Contract</button>
             </div>
           `;
@@ -66,6 +68,12 @@ export function loadMissionsContent() {
           const missionIcon = $(this).closest('.mission-box').find('img').attr('src');
           const missionId = $(this).closest('.mission-box').find('h4').text();
           showMissionPopup(missionTitle, missionDescription, missionIcon, missionId);
+        });
+        $('.submit-flag').click(function () {
+          const missionId = $(this).closest('.mission-box').find('h4').text();
+          const missionTitle = $(this).closest('.mission-box').find('h3').text();
+          const options = [{id: missionId,name: missionTitle}];
+          loadContent('submitflag', options);
         });
       },
       error: function () {
@@ -144,13 +152,13 @@ export function loadMissionsContent() {
           type: 'POST',
           data: { missionId: missionId }, // Envía el ID de la misión al servidor
           success: function(response) {
-              alert('Docker say: ' + response);
+              alert(response);
               $('.mission-popup').fadeOut(function () {
                   $(this).remove();
               });
           },
           error: function(xhr, status, error) {
-              alert('Error starting Docker container: ' + error);
+              alert('Error al empezar el laboratorio: ' + error);
           }
       });
   });

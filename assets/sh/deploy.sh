@@ -2,7 +2,7 @@
 
 # Función para detener y eliminar contenedor e imagen
 detener_y_eliminar_contenedor() {
-    IMAGE_NAME="${TAR_FILE%.tar}"
+    IMAGE_NAME="${TAR_FILE%.tar.gz}"
     IMAGE_NAME="${IMAGE_NAME##*/}"
     CONTAINER_NAME="${IMAGE_NAME}_container"
 
@@ -20,8 +20,8 @@ detener_y_eliminar_contenedor() {
 }
 
 # Verificación de argumentos
-if [ $# -ne 1 ]; then
-    echo "Uso: $0 <archivo_tar>"
+if [ $# -ne 2 ]; then
+    echo "Uso: $0 <archivo_tar_gz> <bandera>"
     exit 1
 fi
 
@@ -47,29 +47,38 @@ if ! command -v at &> /dev/null; then
 fi
 
 TAR_FILE="$1"
+FLAG="$2"
+
 if [ ! -f "$TAR_FILE" ]; then
     echo "Archivo $TAR_FILE no encontrado."
     exit 1
 fi
 
-echo "Desplegando la máquina vulnerable, espere un momento..."
+# Crear archivo de bandera temporal
+FLAG_FILE="/tmp/flag.txt"
+echo "$FLAG" > "$FLAG_FILE"
+
+# Nombre de la imagen y del contenedor
+IMAGE_NAME=$(basename "$TAR_FILE" .tar.gz)
+CONTAINER_NAME="${IMAGE_NAME}_container"
+
+# Verificar si el contenedor ya está en ejecución
+if docker ps -q -f name="$CONTAINER_NAME" | grep -q .; then
+    echo "El contenedor $CONTAINER_NAME ya está iniciado."
+    exit 1
+fi
+
 detener_y_eliminar_contenedor
 
-# Cargar imagen desde el archivo tar
+# Cargar imagen directamente desde el archivo .tar.gz
 if docker load -i "$TAR_FILE" > /dev/null; then
-    IMAGE_NAME=$(basename "$TAR_FILE" .tar)
-    CONTAINER_NAME="${IMAGE_NAME}_container"
-
-    echo "Iniciando el contenedor $CONTAINER_NAME..."
-    if docker run -d --name "$CONTAINER_NAME" "$IMAGE_NAME" > /dev/null; then
+    if docker run -d --name "$CONTAINER_NAME" -v "$FLAG_FILE:/flag/flag.txt" "$IMAGE_NAME" > /dev/null; then
         IP_ADDRESS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_NAME")
-        echo -e "\nMáquina desplegada con éxito. Dirección IP: \e[1;97m$IP_ADDRESS\e[0m"
+        echo -e "\nMáquina desplegada con éxito. Dirección IP: $IP_ADDRESS"
 
-       # Programar el script exit.sh para que se ejecute después de 10 segundos usando 'at'
-        echo "$(pwd)/sh/exit.sh $TAR_FILE" | at "now + 30 minute"
-        echo "[+]El laboratorio se eliminara en 30 minutos automaticamente."
-
-
+        # Programar el script exit.sh para que se ejecute después de 30 minutos usando 'at'
+        echo "$(pwd)/sh/exit.sh $TAR_FILE" | at "now + 30 minutes"
+        echo "[+] El laboratorio se eliminará en 30 minutos automáticamente."
     else
         echo "Error al iniciar el contenedor."
         exit 1
@@ -78,3 +87,7 @@ else
     echo "Error al cargar la imagen Docker desde $TAR_FILE."
     exit 1
 fi
+
+# Limpiar archivo temporal al terminar
+trap "rm -f $FLAG_FILE" EXIT
+exit 0

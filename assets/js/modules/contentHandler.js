@@ -8,6 +8,7 @@ export async function loadContent(page, options = null) {
     profile: () => import('./content/profile.js').then(module => module.loadProfileContent(options)), // Pasamos el username aquí
     manual: () => import('./content/manual.js').then(module => module.loadManualContent()),
     leaderboard: () => import('./content/leaderboard.js').then(module => module.loadLeaderBoardContent()),
+    submitflag: () => import('./content/submitflag.js').then(module => module.loadSubmitFlagContent(options)),
   };
 
   $('#content').empty();

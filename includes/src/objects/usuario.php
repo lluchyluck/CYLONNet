@@ -57,6 +57,11 @@ class Usuario
         return false;
        
     }
+    public function añadirXp($app, $xp){
+        $newXp = $_SESSION["xp"] + $xp;
+        $sqlQuery = "UPDATE users SET xp = ? WHERE username = ?";
+        return $app->executeQuery($sqlQuery, [$newXp, $this->getUsername()], 'ii');  
+    }
     public function descenderAdmin($app){
         
         if(($user = $app->getUser($this->getUsername(),"")) !== null){

@@ -309,6 +309,21 @@ input[type="email"]:focus,
   background-color: #FFD700;
   color: black;
 }
+.submit-flag{
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: transparent;
+  border: 1px solid #FFD700;
+  color: #FFD700;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 200;
+}
+
+.submit-flag:hover {
+  background-color: #FFD700;
+  color: black;
+}
 
 .title-logo {
   display: flex;

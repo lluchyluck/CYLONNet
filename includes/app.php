@@ -159,7 +159,7 @@ class Aplicacion
         }
 
         foreach ($missions as $mission) {
-            if (($mission['name'] === $nombre) || ($mission['id'] === $id)) {
+            if (($mission['name'] === $nombre) || ((int)$mission['id'] === $id)) {
                 return $mission; // Return the complete user data
             }
         }
@@ -168,7 +168,7 @@ class Aplicacion
     }
     public function getAllMissions()
     {
-        return $this->fetchAll("SELECT c.id, c.name, c.description, c.tags, c.difficulty, c.icon, c.dockerlocation, u.username FROM ctfs c LEFT JOIN userxctf x ON c.id = x.id_ctf LEFT JOIN users u ON u.id = x.id_user;");
+        return $this->fetchAll("SELECT c.id, c.name, c.description, c.flag , c.tags, c.difficulty, c.icon, c.dockerlocation, u.username FROM ctfs c LEFT JOIN userxctf x ON c.id = x.id_ctf LEFT JOIN users u ON u.id = x.id_user;");
   
     }
     public function getAllTags()

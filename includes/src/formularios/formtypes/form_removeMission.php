@@ -44,7 +44,6 @@ class FormRemoveMission extends Form {
             $this->setMessageAndRedirect("La misión no está registrada, no se eliminará nada.");
             return false;
         }
-        print_r($data);
         $mision->setId($data["id"]);
         if ($mision->eliminarDB($this->app)) {
             $this->setMessageAndRedirect("Misión eliminada exitosamente.");
