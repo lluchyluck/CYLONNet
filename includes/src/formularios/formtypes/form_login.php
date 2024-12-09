@@ -25,8 +25,8 @@ class FormLogin extends Form {
         return true;
     }
     private function authenticateUser($nombre_usuario, $password) {
-        $usuarioAutenticar = new Usuario($nombre_usuario, $password);
-        if ($usuarioAutenticar->autenticar($this->app)) {
+        $usuarioAutenticar = new Usuario($this->app, -1, $nombre_usuario, $password);
+        if ($usuarioAutenticar->autenticar()) {
             $this->login($usuarioAutenticar);
             $this->setMessageAndRedirect("Inicio de sesión exitoso. Bienvenido, " . $usuarioAutenticar->getUsername() . "!");
         } else {

@@ -116,7 +116,7 @@ class Aplicacion
         return $this->fetchAll("SELECT id, username, email, password, xp, developer, icon FROM users");
     
     }
-    public function getUser($nombreUsuario, $email)
+    public function getUser($id, $nombreUsuario, $email)
     {
         $users = $this->getAllUsers();
 
@@ -125,7 +125,7 @@ class Aplicacion
         }
 
         foreach ($users as $user) {
-            if (($user['username'] === $nombreUsuario) || ($user['email'] === $email)) {
+            if (((int)$user['id'] === $id) || ($user['username'] === $nombreUsuario) || ($user['email'] === $email)) {
                 return $user; // Return the complete user data
             }
         }
@@ -155,11 +155,11 @@ class Aplicacion
         $missions = $this->getAllMissions();
 
         if (empty($missions) || $missions == null) {
-            return null; // No users found, not an error
+            return null; // No missions found, not an error
         }
 
         foreach ($missions as $mission) {
-            if (($mission['name'] === $nombre) || ((int)$mission['id'] === $id)) {
+            if (($mission['name'] === $nombre) || ((int)$mission['id'] === (int)$id)) {
                 return $mission; // Return the complete user data
             }
         }

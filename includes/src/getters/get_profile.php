@@ -2,7 +2,7 @@
 require_once("../../config.php");
 
 if(($_SESSION["login"] === true) && isset($_GET["username"])){
-    $user = $app->getUser($_GET["username"], null);
+    $user = $app->getUser(null, $_GET["username"], null);
     $returnUser = [];
     
     if (is_null($user) || empty($user)) {

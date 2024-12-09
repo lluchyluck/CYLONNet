@@ -3,6 +3,8 @@ require_once __DIR__ ."/../../config.php";
 class Mission
 {
     // Propiedades privadas para encapsular los datos
+
+    private $app;
     private $id;
     private $name;
     private $description;
@@ -11,36 +13,50 @@ class Mission
     private $icon;
     private $dockerlocation;
     private $flag;
+    private $exist;
 
     // Constructor para inicializar las propiedades
-    public function __construct($name,$description = null, $tags= null, $difficulty = null, $icon= null, $dockerlocation= null, $flag = null)
+    public function __construct($app, $id, $name = null,$description = null, $tags= null, $difficulty = null, $icon= null, $dockerlocation= null)
     {
-        $this->name = $name;
-        $this->description = $description;
-        $this->tags = $tags;
-        $this->difficulty = $difficulty;
-        $this->icon = $icon;
-        $this->dockerlocation = $dockerlocation;
-        $this->flag = $flag;
+        //comprobar si el campo id se ha introducido y si un usuario existe ya con ese campo, si no se devolvera lo que ya hay ahi:
+        $this->app = $app;
+        $this->id = (int)$id;
+        if(($missionExist = $this->app->getMission(null, $id)) !== null){
+            $this->name = $missionExist['name'];
+            $this->description = $missionExist['description'];
+            $this->tags = $missionExist['tags'];
+            $this->difficulty = $missionExist['difficulty'];
+            $this->icon = $missionExist['icon'];
+            $this->dockerlocation = $missionExist['dockerlocation'];
+            $this->flag = $missionExist['flag'];
+            $this->exist = true;
+        }else{
+            $this->name = $name;
+            $this->description = $description;
+            $this->tags = $tags;
+            $this->difficulty = $difficulty;
+            $this->icon = $icon;
+            $this->dockerlocation = $dockerlocation;
+            $this->flag = null;
+            $this->exist = false;
+        }
     }
-    public function insertarDB($app)
+    public function insertarDB()
     {
-        $this->setId($app->nextId("ctfs"));
         $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
         $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, difficulty, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
-        return ($app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
+        return ($this->app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($this->app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
     }
-    public function eliminarDB($app)
+    public function eliminarDB()
     {
         $query = "DELETE FROM ctfs WHERE name = ?";
-        return $app->executeQuery($query, [$this->getName()], "s");
+        return $this->app->executeQuery($query, [$this->getName()], "s");
     }
-    public function comprobarFlag($app, $flag){
+    public function comprobarFlag($flag){
         $query = "SELECT flag FROM ctfs WHERE name = ?;";
         $result = [];
-        if($app->executeQuery($query, [$this->getName()], "s", $result)){
-            echo $result[0]["flag"] . $flag;
+        if($this->app->executeQuery($query, [$this->getName()], "s", $result)){
             if(strncmp($flag, $result[0]["flag"], strlen($flag)) === 0){
                 return true;
             }
@@ -59,10 +75,10 @@ class Mission
     
         return $flag;
     }
-    public function renewFlag($app){
+    public function renewFlag(){
         $query = "UPDATE ctfs SET flag = ? WHERE name = ?;";
         $this->setFlag($this->generateFlag());
-        return $app->executeQuery($query, [$this->getFlag(), $this->getName()], "ss");
+        return $this->app->executeQuery($query, [$this->getFlag(), $this->getName()], "ss");
     }
     // Métodos getters para acceder a las propiedades
     public function getId()
@@ -99,6 +115,10 @@ class Mission
     public function getDockerloc()
     {
         return $this->dockerlocation;
+    }
+    public function getExistence()
+    {
+        return $this->exist;
     }
 
 

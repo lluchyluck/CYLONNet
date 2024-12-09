@@ -4,10 +4,9 @@ require_once __DIR__ ."/../src/objects/mission.php";
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     // Obtener el ID de la misión
     $missionId = $_POST['missionId'];
-
-    if (($mission = $app->getMission("", $missionId)) !== null) {
-        $containerName = $mission["dockerlocation"];
-        $missionObj = new Mission($mission["name"]);
+    $mission = new Mission($app, $missionId);
+    if ($mission->getExistence()) {
+        $containerName = $mission->getDockerloc();
 
         // Comando para iniciar el contenedor
         $scriptPath = escapeshellcmd("./../../assets/sh/isReady.sh");
@@ -18,14 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
         $returnCode = 0;
         exec($isReadyCommand, $output, $returnCode);
         if ($returnCode === 0) {
-            $missionObj->renewFlag($app);           
+            $mission->renewFlag();           
         }else{
             echo implode("\n", $output);
             error_log("Error in deploy.sh: " . implode("\n", $output));
             exit;
         }
         $scriptPath = escapeshellcmd("./../../assets/sh/deploy.sh");
-        $flag = escapeshellarg("FELICIDADES CYLON, FLAG{" . $missionObj->getFlag() . "}");
+        $flag = escapeshellarg("FELICIDADES CYLON, FLAG{" . $mission->getFlag() . "}");
         $initCommand = "$scriptPath $containerPath $flag";
 
         

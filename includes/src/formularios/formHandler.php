@@ -6,9 +6,7 @@ function handler(){
         if(isset($_POST['login_button'])){
             
             require_once __DIR__ ."/formtypes/form_login.php";
-            
             $form = new FormLogin($app);
-            
             $form->handle();
         }else if(isset($_POST['logout_button'])){
             require_once __DIR__ ."/formtypes/form_logout.php";

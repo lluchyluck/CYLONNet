@@ -104,8 +104,11 @@ function handleMission($app)
         return false;
     }
 
-    $mision = new Mission($name, $description, $tags, $difficulty,$imagenRuta, $dockerLoc);
-    return registrarMision($mision, $app);
+    $mision = new Mission($app, $app->nextId("ctfs"), $name, $description, $tags, $difficulty, $imagenRuta, $dockerLoc);
+    if(!$mision->getExistence())
+        return registrarMision($mision, $app);
+    else
+        return false;
 }
 
 function upload($app)
@@ -113,7 +116,7 @@ function upload($app)
     $uploadDir = './uploads/';
     if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
         echo "Error al crear el directorio de subida.";
-        return;
+        return ;
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
@@ -123,7 +126,7 @@ function upload($app)
         $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
         
         if ($chunkIndex === 0 && !handleMission($app)) {
-            return false;
+            return ;
         }
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
             

@@ -35,18 +35,26 @@ class FormSubmitFlag extends Form {
             $this->setMessageAndRedirect("No hay ninguna mision con ese ID!!!");
             return false;
         }
-        $misionComprobar = new Mission($data["name"]);
-        
-        if ($misionComprobar->comprobarFlag($this->app, $flag)) {
-            $usuario = new Usuario($_SESSION["username"]);
-            $xp = 100;
-            if($usuario->añadirXp($this->app, $xp)){
-                $this->setMessageAndRedirect("XP añadida: " . $xp);
-            }else{
-                $this->setMessageAndRedirect("Error al añadir XP");
+        $misionComprobar = new Mission($this->app, $data["id"]);
+        if($misionComprobar->getExistence()){  
+            if ($misionComprobar->comprobarFlag($flag)) {
+                $usuario = new Usuario($this->app, $_SESSION["id"]);
+                $xp = 1000;
+                if($usuario->añadirXp($this->app, $xp)){
+                    $_SESSION["xp"] = $usuario->getXp();
+                }else{
+                    $this->setMessageAndRedirect("Error al añadir XP");
+                }
+                if($usuario->misionCompletada($this->app, $misionComprobar->getId())){
+                    $this->setMessageAndRedirect("Mision completada, XP añadida: " . $xp);
+                }else{
+                    $this->setMessageAndRedirect("Error al marcar como completada la mision.");
+                }
+            } else {
+                $this->setMessageAndRedirect("Flag incorrecta!!!");
             }
-        } else {
-            $this->setMessageAndRedirect("Flag incorrecta!!!");
+        }else{
+            $this->setMessageAndRedirect("No existe una mision con ese ID!!!");
         }
     }
 }
