@@ -20,7 +20,6 @@ function handler(){
            
             $form->handle();
         }else if (isset($_POST['add_mission_button'])){
-            echo "hola";
             require_once __DIR__ ."/formtypes/form_newMission.php";
             if(($_SESSION["login"] === true) && isset($_SESSION["login"]) && isset($_SESSION["developer"]) && ($_SESSION["developer"] === true)){
                 $form = new FormNewMission($app);

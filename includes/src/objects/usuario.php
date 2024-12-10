@@ -20,7 +20,7 @@ class Usuario
         $this->app = $app;
         $this->id = (int)$id;
         if(($userExist = $this->app->getUser($id, null, null)) !== null){
-            $this->name = $userExist['username'];
+            $this->username = $userExist['username'];
             $this->password = $userExist['password'];
             $this->email = $userExist['email'];
             $this->xp = $userExist['xp'];
@@ -81,6 +81,13 @@ class Usuario
         return false;
     }
     public function misionCompletada($missionId){
+        $sqlSelect = "SELECT x.id_ctf FROM userxctf x RIGHT JOIN users u ON x.id_user = u.id WHERE x.id_ctf = ? AND x.id_user = ?";
+        $output = [];
+        if(!$this->app->executeQuery($sqlSelect, [$missionId, $this->getId()], "ii", $output))
+            return false;
+        if($output[0]["id_ctf"] !== null)
+            return false;
+        
         $query = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
         return $this->app->executeQuery($query, [$this->getId(), $missionId, true, false], "iiii");
     }

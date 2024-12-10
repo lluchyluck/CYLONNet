@@ -24,10 +24,10 @@ class FormSubmitFlag extends Form {
             $this->setMessageAndRedirect("El missionId debe de ser un número");
             return false;
         }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $flag)) {
-            $this->setMessageAndRedirect("La flag debe de tener letras y numeros unicamente.");
+        if (!preg_match('/^[a-zA-Z0-9]{1,16}$/', $flag)) {
+            $this->setMessageAndRedirect("La flag debe tener entre 1 y 16 caracteres, compuesta únicamente por letras y números.");
             return false;
-        }
+        }        
         return true;
     }
     private function validateFlag($missionId, $flag) {
@@ -38,17 +38,22 @@ class FormSubmitFlag extends Form {
         $misionComprobar = new Mission($this->app, $data["id"]);
         if($misionComprobar->getExistence()){  
             if ($misionComprobar->comprobarFlag($flag)) {
-                $usuario = new Usuario($this->app, $_SESSION["id"]);
+                $usuario = new Usuario($this->app, (int)$_SESSION["id"]);
+                var_dump($usuario);
                 $xp = 1000;
-                if($usuario->añadirXp($this->app, $xp)){
-                    $_SESSION["xp"] = $usuario->getXp();
-                }else{
-                    $this->setMessageAndRedirect("Error al añadir XP");
-                }
-                if($usuario->misionCompletada($this->app, $misionComprobar->getId())){
-                    $this->setMessageAndRedirect("Mision completada, XP añadida: " . $xp);
-                }else{
-                    $this->setMessageAndRedirect("Error al marcar como completada la mision.");
+                if($usuario->getExistence()){
+                    if($usuario->misionCompletada($misionComprobar->getId())){
+                        echo "pasa";
+                        if($usuario->añadirXp($xp)){
+                            $_SESSION["xp"] = $usuario->getXp();
+                            $this->setMessageAndRedirect("Mision completada, XP añadida: " . $xp);
+                        }else{
+                            $this->setMessageAndRedirect("Error al añadir XP");
+                        }
+                        
+                    }else{
+                        $this->setMessageAndRedirect("Esta mision ya ha sido completada!!!");
+                    }
                 }
             } else {
                 $this->setMessageAndRedirect("Flag incorrecta!!!");
