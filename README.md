@@ -1,3 +1,3 @@
 # CYLONNet
-Proyecto Realizado por: Lucas Calzada del Pozo.
+Proyecto en proceso, realizado por: Lucas Calzada del Pozo.
 
