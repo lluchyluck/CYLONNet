@@ -6,8 +6,8 @@ class FormRegister extends Form {
     public function handle() {
         
 
-        $nombre_usuario = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $nombre_usuario = htmlspecialchars($_POST["username"], ENT_QUOTES, 'UTF-8');
+        $email = htmlspecialchars(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL), ENT_QUOTES, 'UTF-8');
         $password = $_POST['password'];
         $img = ($_FILES["image"]["size"] !== 0) ? $_FILES["image"] : null;
         
@@ -22,7 +22,7 @@ class FormRegister extends Form {
             return;
         }
         
-        $user = new Usuario($nombre_usuario, $password, $email, $imagenRuta);
+        $user = new Usuario($this->app, $this->app->nextId("users"),$nombre_usuario, $password, $email, $imagenRuta);
         
         $this->registrarUsuario($user);
         
@@ -38,14 +38,31 @@ class FormRegister extends Form {
             $this->setMessageAndRedirect("Formato de correo electrónico no válido.");
             return false;
         }
-
+        if (!preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
+            $this->setMessageAndRedirect("El correo electrónico no tiene un formato válido.");
+            return false;
+        }
+        $domain = substr(strrchr($email, "@"), 1); 
+        if ($domain !== "ucm.es") {
+            $this->setMessageAndRedirect("El correo electrónico debe pertenecer a ucm.es.");
+            return false;
+        }
+        
         if (strlen($password) < 8) {
             $this->setMessageAndRedirect("La contraseña debe tener al menos 8 caracteres.");
+            return false;
+        }
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
+            $this->setMessageAndRedirect("La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.");
             return false;
         }
 
         if (!preg_match('/^[a-zA-Z0-9_]+$/', $nombre_usuario)) {
             $this->setMessageAndRedirect("El nombre de usuario solo puede contener letras, números y guiones bajos.");
+            return false;
+        }
+        if (strlen($nombre_usuario) > 50) {
+            $this->setMessageAndRedirect("El nombre de usuario no puede tener más de 50 caracteres.");
             return false;
         }
 
@@ -68,13 +85,14 @@ class FormRegister extends Form {
     }
 
     private function validateImage($image) {
-        $allowedMimeTypes = ['image/jpeg', 'image/png'];
-        $fileType = mime_content_type($image['tmp_name']);
-        if (!in_array($fileType, $allowedMimeTypes)) {
-            $this->setMessageAndRedirect("Tipo de archivo no permitido. Solo se permiten imágenes JPEG y PNG.");
+        if (!preg_match('/^[a-zA-Z0-9_]+\.(jpg|jpeg|png)$/', $image["name"])) {
+            $this->setMessageAndRedirect("El nombre de la imagen solo puede contener letras, números y guiones bajos, y debe tener una extensión .jpg, .jpeg o .png.");
             return false;
         }
-
+        if (!getimagesize($image['tmp_name'])) {
+            $this->setMessageAndRedirect("El archivo no es una imagen válida.");
+            return false;
+        }
         if ($image['size'] > 2 * 1024 * 1024) {
             $this->setMessageAndRedirect("El tamaño de la imagen no debe superar los 2 MB.");
             return false;
@@ -96,7 +114,7 @@ class FormRegister extends Form {
 
     private function registrarUsuario($user) {
         
-        if ($this->app->getUser($user->getUsername(), $user->getEmail()) !== null) {
+        if ($this->app->getUser($user->getId(),$user->getUsername(), $user->getEmail()) !== null) {
             
             $this->setMessageAndRedirect("Error en el registro: el usuario ya está registrado.");
             return false;

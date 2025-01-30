@@ -63,6 +63,15 @@ class Mission
         }
         return false;
     }
+    public function calculateMissionXP(){
+        $tagsArray = json_decode($this->tags, true);
+        $numTags = is_array($tagsArray['tagnames']) ? count($tagsArray['tagnames']) : 0;
+
+        // Calcular XP: (número de tags * 50) * dificultad
+        $xp = ($numTags * 50) * $this->difficulty;
+
+        return $xp;
+    }
     private function generateFlag() {
         $length = 16; // Longitud de la flag
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

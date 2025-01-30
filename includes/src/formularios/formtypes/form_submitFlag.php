@@ -40,7 +40,7 @@ class FormSubmitFlag extends Form {
             if ($misionComprobar->comprobarFlag($flag)) {
                 $usuario = new Usuario($this->app, (int)$_SESSION["id"]);
                 var_dump($usuario);
-                $xp = 1000;
+                $xp = $misionComprobar->calculateMissionXP();
                 if($usuario->getExistence()){
                     if($usuario->misionCompletada($misionComprobar->getId())){
                         echo "pasa";

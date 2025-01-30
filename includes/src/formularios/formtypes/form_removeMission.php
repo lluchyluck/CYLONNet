@@ -13,11 +13,13 @@ class FormRemoveMission extends Form {
         if (!$this->validateInputs($name)) {
             return;
         }
-        
+        if (($data = $this->app->getMission($name,null)) === null) {        
+            $this->setMessageAndRedirect("La misión no está registrada, no se eliminará nada.");
+            return false;
+        }
        
-        
        
-        $mission = new Mission($name);
+        $mission = new Mission($this->app, $data["id"]);
         
         $this->eliminarMision($mission);
         
@@ -40,11 +42,6 @@ class FormRemoveMission extends Form {
     }
 
     private function eliminarMision($mision) {
-        if (($data = $this->app->getMission($mision->getName(),null)) === null) {        
-            $this->setMessageAndRedirect("La misión no está registrada, no se eliminará nada.");
-            return false;
-        }
-        $mision->setId($data["id"]);
         if ($mision->eliminarDB($this->app)) {
             $this->setMessageAndRedirect("Misión eliminada exitosamente.");
             return true;

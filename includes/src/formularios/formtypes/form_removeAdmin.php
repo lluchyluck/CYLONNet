@@ -15,9 +15,11 @@ class FormRemoveAdmin extends Form {
         }
         
        
-        
-       
-        $user = new Usuario($name);
+        if (($data = $this->app->getUser(null,$name,null)) === null) {        
+            $this->setMessageAndRedirect("Error al eliminar administrador, el usuario introducido no existe!!!");
+            return false;
+        }
+        $user = new Usuario($this->app, $data["id"]);
         
         $this->eliminarAdmin($user);
     }
@@ -44,7 +46,7 @@ class FormRemoveAdmin extends Form {
             $this->setMessageAndRedirect("Usuario descendido a usuario normal exitosamente.");
             return true;
         } else {
-            $this->setMessageAndRedirect("La usuario no está registrado!!!.");
+            $this->setMessageAndRedirect("Hubo un problema al descender admin.");
             return false;
         }
     }

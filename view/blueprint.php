@@ -74,6 +74,7 @@ require_once "../includes/config.php";
         </main>
     </div>
     <div id="message-box"></div>
+    <div id="csrf-token" data-csrf-token="<?php echo $_SESSION['csrf_token']; ?>"></div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script type="module" src="../assets/js/modules/contentHandler.js"></script>
     <script src="../assets/js/modules/user.js"></script>

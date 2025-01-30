@@ -4,7 +4,7 @@ require_once __DIR__ ."/../../objects/usuario.php";
 
 class FormLogin extends Form {
     public function handle() {
-        $nombre_usuario = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $nombre_usuario = htmlspecialchars($_POST["username"], ENT_QUOTES, 'UTF-8');
         $password = $_POST['password'];
     
         if (!$this->validateInputs($nombre_usuario, $password)) {
@@ -41,5 +41,6 @@ class FormLogin extends Form {
         $_SESSION["xp"] = $user->getXp();
         $_SESSION["developer"] = (bool)$user->getDeveloper();
         $_SESSION["icon"] = $user->getImg();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(8));
     }
 }

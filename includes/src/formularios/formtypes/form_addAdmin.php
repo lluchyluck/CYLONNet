@@ -4,18 +4,27 @@ require_once __DIR__ ."/../../objects/usuario.php";
 
 class FormAddAdmin extends Form {
     public function handle() {
-        $nombre_usuario = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $nombre_usuario = htmlspecialchars($_POST["username"], ENT_QUOTES, 'UTF-8');
 
+        if (!isset($_POST['token']) || $_POST['token'] !== $_SESSION['csrf_token']) {
+            $this->setMessageAndRedirect("Token CSRF no válido.");
+        }
         
 
         if (!$this->validateInputs($nombre_usuario)) {
             return;
         }
-        $usuario = new Usuario($nombre_usuario);
-        if($usuario->ascenderAdmin($this->app)){
-            $this->setMessageAndRedirect("Ahora $nombre_usuario es administrador!!!");
+        if (($data = $this->app->getUser(null,$nombre_usuario,null)) === null) {        
+            $this->setMessageAndRedirect("Error al añadir administrador, el usuario introducido no existe!!!");
+            return false;
         }
-        $this->setMessageAndRedirect("Error al añadir administrador, el usuario introducido no existe!!!");
+        $usuario = new Usuario($this->app, $data["id"]);
+        if($usuario->ascenderAdmin()){
+            $this->setMessageAndRedirect("Ahora $nombre_usuario es administrador!!!");
+        }else{
+            $this->setMessageAndRedirect("Error al añadir $nombre_usuario como administrador!!!");
+        }
+ 
     }
 
     private function validateInputs($nombre_usuario) {

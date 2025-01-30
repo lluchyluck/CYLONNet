@@ -15,7 +15,7 @@ class Usuario
     private $exist;
 
     // Constructor para inicializar las propiedades
-    public function __construct($app, $id, $username = null, $password = null, $xp = 0, $email = null, $img = null)
+    public function __construct($app, $id, $username = null, $password = null, $email = null, $img = null)
     {   
         $this->app = $app;
         $this->id = (int)$id;
@@ -30,7 +30,8 @@ class Usuario
             $this->username = $username;
             $this->password = $password;
             $this->email = $email;
-            $this->xp = $xp;
+            $this->xp = 0;
+            $this->developer = false; //El valor por defecto para un nuevo usuario de developer es 0
             $this->img = $img;
             $this->exist = false;
         }
@@ -39,12 +40,9 @@ class Usuario
     public function insertarDB()
     {   
         
-        $this->setId($this->app->nextId("users"));
-        $this->setDeveloper(0); //El valor por defecto para un nuevo usuario de developer es 0
-        $hashedPassword = password_hash($this->getPassword(), PASSWORD_BCRYPT);
-
+        $hashedPassword = password_hash($this->password, PASSWORD_BCRYPT);
         $query = "INSERT INTO users (id, username, email, password, xp, developer, icon) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        return $this->app->executeQuery($query, [$this->getId(), $this->getUsername(), $this->getEmail(), $hashedPassword, 0, false, $this->getImg()], "isssiis");
+        return $this->app->executeQuery($query, [$this->id, $this->username, $this->email, $hashedPassword, $this->xp, $this->developer, $this->img], "isssiis");
     }
     public function autenticar(){
         if (($usuarioAComprobar = $this->app->getUser(null, $this->getUsername(), "")) !== null) {   
@@ -60,16 +58,9 @@ class Usuario
         return false;
     }
     public function ascenderAdmin(){
-        
-        if(($user = $this->app->getUser($this->getUsername(),"")) !== null){
-            
-            $this->setId($user["id"]); // ID del usuario que quieres actualizar
-            $this->setDeveloper(1); // Nuevo valor para el campo developer         
-            $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
-            return $this->app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
-        }
-        return false;
-       
+        $this->setDeveloper(1); // Nuevo valor para el campo developer         
+        $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
+        return $this->app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
     }
     public function añadirXp($xp){
         $newXp = ((int)$_SESSION["xp"]) + $xp;
@@ -91,17 +82,10 @@ class Usuario
         $query = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
         return $this->app->executeQuery($query, [$this->getId(), $missionId, true, false], "iiii");
     }
-    public function descenderAdmin(){
-        
-        if(($user = $this->app->getUser($this->getUsername(),"")) !== null){
-            
-            $this->setId($user["id"]); // ID del usuario que quieres actualizar
-            $this->setDeveloper(0); // Nuevo valor para el campo developer         
-            $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
-            return $this->app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
-        }
-        return false;
-       
+    public function descenderAdmin(){      
+        $this->setDeveloper(0); // Nuevo valor para el campo developer         
+        $sqlQuery = "UPDATE users SET developer = ? WHERE id = ?";
+        return $this->app->executeQuery($sqlQuery, [$this->getDeveloper(), $this->getId()], 'ii');  
     }
 
     // Métodos getters para acceder a las propiedades

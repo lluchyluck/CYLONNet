@@ -1,10 +1,14 @@
-<?php 
+<?php
 require_once "../../config.php";
 
-if(($_SESSION["login"] === true) && isset($_SESSION["developer"]) && ($_SESSION["developer"] === true)){
-    echo 1;
-    //$_SESSION["mensaje"] = "Bienvenido <strong>".$_SESSION["username"]. "</strong> al panel de administrador";
-}else{
+if (!isset($_SESSION["login"]) || !isset($_SESSION["developer"])) {
     echo 0;
-    //$_SESSION["mensaje"] = "No tienes los permisos adecuados para acceder al panel de dessarrollador!!!";
+    exit;
+}
+
+// Validación estricta de booleanos para evitar valores inesperados
+if ($_SESSION["login"] === true && $_SESSION["developer"] === true) {
+    echo 1;
+} else {
+    echo 0;
 }

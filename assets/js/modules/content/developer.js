@@ -184,6 +184,8 @@ export function selectDeveloperContent() {
   
   
   function loadDeveloperContent() {
+    const csrfToken = document.getElementById('csrf-token').getAttribute('data-csrf-token');
+
     $('#content').html(`
       <div class="box">
         <h2>Developer Panel</h2>
@@ -219,6 +221,7 @@ export function selectDeveloperContent() {
   
                     <label for="docker_file">Selecciona un archivo Docker:</label><br>
                     <input type="file" id="docker_file" name="docker_file" accept=".tar.gz" required><br><br>
+                    <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="add_mission_button" class="button">Añadir Misión</button>
                 </form>
             </div>
@@ -237,7 +240,7 @@ export function selectDeveloperContent() {
             <div class="toggle-content" style="display: none;">
                 <form id="add-admin" action="../includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="username" placeholder="Username" required><br>
-                    
+                    <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="add_admin_button" class="button">Añadir Administrador</button>
                 </form>
             </div>
@@ -253,6 +256,7 @@ export function selectDeveloperContent() {
             <div class="toggle-content">
                 <form id="remove-mission" action="../includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="mission_name" placeholder="Nombre de la misión" required><br>
+                    <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="remove_mission_button" class="button">Eliminar Misión</button>
                 </form>
             </div>
@@ -269,6 +273,7 @@ export function selectDeveloperContent() {
             <div class="toggle-content">
                 <form id="remove-admin" action="../includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="admin_name" placeholder="Nombre de usuario del administrador" required><br>
+                    <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="remove_admin_button" class="button">Eliminar Administrador</button>
                 </form>
             </div>
