@@ -53,7 +53,7 @@ class Mission
         $query = "DELETE FROM ctfs WHERE name = ?";
         return $this->app->executeQuery($query, [$this->getName()], "s");
     }
-    public function comprobarFlag($flag){
+    public function comprobarFlag($flag, $isRootFlag){
         $query = "SELECT flag FROM ctfs WHERE name = ?;";
         $result = [];
         if($this->app->executeQuery($query, [$this->getName()], "s", $result)){

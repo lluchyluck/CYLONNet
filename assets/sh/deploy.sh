@@ -71,7 +71,12 @@ fi
 detener_y_eliminar_contenedor
 
 # Cargar imagen directamente desde el archivo .tar.gz
-if docker load -i "$TAR_FILE" > /dev/null; then
+LOAD_OUTPUT=$(docker load -i "$TAR_FILE")
+if [ $? -eq 0 ]; then
+    IMAGE_NAME=$(echo "$LOAD_OUTPUT" | grep "Loaded image:" | awk -F ': ' '{print $2}')
+    if [[ "$IMAGE_NAME" != *:* ]]; then
+        IMAGE_NAME="$IMAGE_NAME:latest"
+    fi
     if docker run -d --name "$CONTAINER_NAME" -v "$FLAG_FILE:/flag/flag.txt" "$IMAGE_NAME" > /dev/null; then
         IP_ADDRESS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_NAME")
         echo -e "\nMáquina desplegada con éxito. Dirección IP: $IP_ADDRESS"
@@ -80,7 +85,8 @@ if docker load -i "$TAR_FILE" > /dev/null; then
         echo "$(pwd)/sh/exit.sh $TAR_FILE" | at "now + 30 minutes"
         echo "[+] El laboratorio se eliminará en 30 minutos automáticamente."
     else
-        echo "Error al iniciar el contenedor."
+        ERROR_OUTPUT=$(docker run -d --name "$CONTAINER_NAME" -v "$FLAG_FILE:/flag/flag.txt" "$IMAGE_NAME" 2>&1)
+        echo "Error al iniciar el contenedor: $ERROR_OUTPUT"
         exit 1
     fi
 else
