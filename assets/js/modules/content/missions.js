@@ -4,11 +4,11 @@ import { loadProfileContent } from './profile.js';
 export function loadMissionsContent() {
     $('#content').html(`
       <div class="box">
-        <h2>Available Missions</h2>
+        <h2>Misiones disponibles</h2>
          <div style="display: flex; gap: 10px;">
-          <input type="text" id="mission-search" placeholder="Search missions...">
+          <input type="text" id="mission-search" placeholder="Buscar misiones...">
           <select id="tag-filter">
-            <option value="">All Tags</option>
+            <option value="">Tags</option>
           </select>
         </div>
         <div id="mission-grid"></div>
@@ -51,8 +51,8 @@ export function loadMissionsContent() {
                 <p><strong>Creador:</strong><span class="mission-username"  style="cursor: pointer; color: inherit; transition: color 0.3s ease;" onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';" data-username="${mission.username}">${mission.username}</span></p>
                 <h4 style="display: none;">${mission.id}</h4>
               </div>
-              <button class="button submit-flag">Submit Flag</button>
-              <button class="button see-contract">See Contract</button>
+              <button class="button submit-flag">Validar Flag</button>
+              <button class="button see-contract">Ver Contrato</button>
             </div>
           `;
           missionGrid.append(missionBox);

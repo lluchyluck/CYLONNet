@@ -188,7 +188,7 @@ export function selectDeveloperContent() {
 
     $('#content').html(`
       <div class="box">
-        <h2>Developer Panel</h2>
+        <h2>Panel de administración</h2>
         <div class="box">
             
             <span class="toggle-label">

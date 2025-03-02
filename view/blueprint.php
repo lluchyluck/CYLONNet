@@ -59,15 +59,16 @@ require_once "../includes/config.php";
     <div class="main-container">
         <nav class="menu">
             <a data-page="home"><img src="../assets/images/menu/basecyclon.png" alt="Home icon" width="50"
-                    height="50">Home</a>
+                    height="50">Inicio</a>
             <a data-page="missions"><img src="../assets/images/menu/raider.png" alt="Missions icon" width="50"
-                    height="50">Missions</a>
+                    height="50">Misiones</a>
             <a data-page="leaderboard"><img src="../assets/images/menu/leaderboard.png" alt="Leaderboard icon" width="50"
-                    height="50">Leaderboard</a>
+                    height="50">Clasificación</a>
             <a data-page="manual"><img src="../assets/images/menu/manual.png" alt="Manual icon" width="50"
                     height="50">Manual</a>
-            <a data-page="developer"><img src="../assets/images/menu/gearwheel.png" alt="Dev icon" width="50"
-                    height="50">Developer</a>
+            <?php if ($_SESSION["developer"] === true)
+                echo '<a data-page="developer"><img src="../assets/images/menu/gearwheel.png" alt="Dev icon" width="50" height="50">Admin</a>'
+            ?>
         </nav>
         <main class="content" id="content">
             <!-- El contenido se carga  dinamicamente -->

@@ -133,7 +133,7 @@ class Aplicacion
         return null;
     }
     public function getUserMissions($username){
-        $query = "SELECT DISTINCT c.id, c.name, c.tags, c.difficulty, c.icon FROM ctfs c JOIN userxctf x ON c.id = x.id_ctf JOIN users u ON x.id_user = u.id WHERE u.username = ? AND x.completado = 1";
+        $query = "SELECT DISTINCT c.id, c.name, c.tags, c.difficulty, c.icon FROM ctfs c JOIN userxctf x ON c.id = x.id_ctf JOIN users u ON x.id_user = u.id WHERE u.username = ? AND (x.ucompletado = 1 OR x.rcompletado = 1)";
         $output = [];
         if($this->executeQuery($query, [$username], "s",$output)){
             return $output;
@@ -142,7 +142,7 @@ class Aplicacion
     }
     public function getUserTop()
 {
-    $query = "SELECT id, username, xp, icon FROM users ORDER BY xp DESC LIMIT 5";
+    $query = "SELECT id, username, xp, icon FROM users ORDER BY xp DESC LIMIT 10";
     $output = [];
     if ($this->executeQuery($query, [], "", $output)) {
         return $output;
@@ -168,7 +168,7 @@ class Aplicacion
     }
     public function getAllMissions()
     {
-        return $this->fetchAll("SELECT DISTINCT c.id, c.name, c.description, c.flag , c.tags, c.difficulty, c.icon, c.dockerlocation, u.username FROM ctfs c LEFT JOIN userxctf x ON c.id = x.id_ctf LEFT JOIN users u ON u.id = x.id_user WHERE x.creada = 1;");
+        return $this->fetchAll("SELECT DISTINCT c.id, c.name, c.description, c.tags, c.difficulty, c.icon, c.dockerlocation, u.username FROM ctfs c LEFT JOIN userxctf x ON c.id = x.id_ctf LEFT JOIN users u ON u.id = x.id_user WHERE x.creada = 1;");
   
     }
     public function getAllTags()

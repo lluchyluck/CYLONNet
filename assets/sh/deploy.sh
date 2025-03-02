@@ -20,8 +20,8 @@ detener_y_eliminar_contenedor() {
 }
 
 # Verificación de argumentos
-if [ $# -ne 2 ]; then
-    echo "Uso: $0 <archivo_tar_gz> <bandera>"
+if [ $# -ne 3 ]; then
+    echo "Uso: $0 <archivo_tar_gz> <bandera_usuario> <bandera_root>"
     exit 1
 fi
 
@@ -47,16 +47,19 @@ if ! command -v at &> /dev/null; then
 fi
 
 TAR_FILE="$1"
-FLAG="$2"
+uFLAG="$2"
+rFLAG="$3"
 
 if [ ! -f "$TAR_FILE" ]; then
     echo "Archivo $TAR_FILE no encontrado."
     exit 1
 fi
 
-# Crear archivo de bandera temporal
-FLAG_FILE="/tmp/flag.txt"
-echo "$FLAG" > "$FLAG_FILE"
+# Crear archivos de bandera temporales
+uFLAG_FILE="/tmp/uflag.txt"
+rFLAG_FILE="/tmp/rflag.txt"
+echo "$uFLAG" > "$uFLAG_FILE"
+echo "$rFLAG" > "$rFLAG_FILE"
 
 # Nombre de la imagen y del contenedor
 IMAGE_NAME=$(basename "$TAR_FILE" .tar.gz)
@@ -77,15 +80,22 @@ if [ $? -eq 0 ]; then
     if [[ "$IMAGE_NAME" != *:* ]]; then
         IMAGE_NAME="$IMAGE_NAME:latest"
     fi
-    if docker run -d --name "$CONTAINER_NAME" -v "$FLAG_FILE:/flag/flag.txt" "$IMAGE_NAME" > /dev/null; then
+    if docker run -d --name "$CONTAINER_NAME" \
+        -v "$uFLAG_FILE:/flag/uflag.txt" \
+        -v "$rFLAG_FILE:/root/flag/rflag.txt" \
+        "$IMAGE_NAME" > /dev/null; then
+        
         IP_ADDRESS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_NAME")
         echo -e "\nMáquina desplegada con éxito. Dirección IP: $IP_ADDRESS"
 
-        # Programar el script exit.sh para que se ejecute después de 30 minutos usando 'at'
+        # Programar la eliminación del contenedor en 30 minutos
         echo "$(pwd)/sh/exit.sh $TAR_FILE" | at "now + 30 minutes"
         echo "[+] El laboratorio se eliminará en 30 minutos automáticamente."
     else
-        ERROR_OUTPUT=$(docker run -d --name "$CONTAINER_NAME" -v "$FLAG_FILE:/flag/flag.txt" "$IMAGE_NAME" 2>&1)
+        ERROR_OUTPUT=$(docker run -d --name "$CONTAINER_NAME" \
+            -v "$uFLAG_FILE:/flag/uflag.txt" \
+            -v "$rFLAG_FILE:/root/flag/rflag.txt" \
+            "$IMAGE_NAME" 2>&1)
         echo "Error al iniciar el contenedor: $ERROR_OUTPUT"
         exit 1
     fi
@@ -94,6 +104,6 @@ else
     exit 1
 fi
 
-# Limpiar archivo temporal al terminar
-trap "rm -f $FLAG_FILE" EXIT
+# Limpiar archivos temporales al terminar
+trap "rm -f $uFLAG_FILE $rFLAG_FILE" EXIT
 exit 0

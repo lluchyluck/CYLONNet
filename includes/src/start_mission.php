@@ -3,7 +3,7 @@ require_once __DIR__ ."/../src/objects/mission.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     // Obtener el ID de la misión
-    $missionId = $_POST['missionId'];
+    $missionId = filter_input(INPUT_POST, 'missionId', FILTER_VALIDATE_INT);
     $mission = new Mission($app, $missionId);
     if ($mission->getExistence()) {
         $containerName = $mission->getDockerloc();
@@ -24,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
             exit;
         }
         $scriptPath = escapeshellcmd("./../../assets/sh/deploy.sh");
-        $flag = escapeshellarg("FELICIDADES CYLON, FLAG{" . $mission->getFlag() . "}");
-        $initCommand = "$scriptPath $containerPath $flag";
+        $uflag = escapeshellarg("FELICIDADES CYLON, USER FLAG{" . $mission->getuFlag() . "}");
+        $rflag = escapeshellarg("FELICIDADES CYLON, ROOT FLAG{" . $mission->getrFlag() . "}");
+        $initCommand = "$scriptPath $containerPath $uflag $rflag";
 
         
         exec($initCommand, $output, $returnCode);

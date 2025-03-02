@@ -12,7 +12,8 @@ class Mission
     private $difficulty;
     private $icon;
     private $dockerlocation;
-    private $flag;
+    private $uflag;
+    private $rflag;
     private $exist;
 
     // Constructor para inicializar las propiedades
@@ -28,7 +29,7 @@ class Mission
             $this->difficulty = $missionExist['difficulty'];
             $this->icon = $missionExist['icon'];
             $this->dockerlocation = $missionExist['dockerlocation'];
-            $this->flag = $missionExist['flag'];
+            $this->uflag = $missionExist['flag'];
             $this->exist = true;
         }else{
             $this->name = $name;
@@ -37,7 +38,7 @@ class Mission
             $this->difficulty = $difficulty;
             $this->icon = $icon;
             $this->dockerlocation = $dockerlocation;
-            $this->flag = null;
+            $this->uflag = null;
             $this->exist = false;
         }
     }
@@ -45,24 +46,36 @@ class Mission
     {
         $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
         $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, difficulty, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, completado, creada) VALUES (?, ?, ?, ?)";
-        return ($this->app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($this->app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false, true], "iiii"));
+        $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, ucompletado, rcompletado, creada) VALUES (?, ?, ?, ?)";
+        return ($this->app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($this->app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false,false, true], "iiiii"));
     }
     public function eliminarDB()
     {
         $query = "DELETE FROM ctfs WHERE name = ?";
         return $this->app->executeQuery($query, [$this->getName()], "s");
     }
-    public function comprobarFlag($flag, $isRootFlag){
-        $query = "SELECT flag FROM ctfs WHERE name = ?;";
+    public function comprobarFlag($flag, $isRootFlag) {
+        if ($isRootFlag) {
+            $query = "SELECT rflag FROM ctfs WHERE name = ?;";
+        } else {    
+            $query = "SELECT uflag FROM ctfs WHERE name = ?;";
+        }
+    
         $result = [];
-        if($this->app->executeQuery($query, [$this->getName()], "s", $result)){
-            if(strncmp($flag, $result[0]["flag"], strlen($flag)) === 0){
-                return true;
+        if ($this->app->executeQuery($query, [$this->getName()], "s", $result)) {
+            if ($isRootFlag) {
+                if (strncmp($flag, $result[0]["rflag"], strlen($flag)) === 0) {
+                    return true;
+                }
+            } else {
+                if (strncmp($flag, $result[0]["uflag"], strlen($flag)) === 0) {
+                    return true;
+                }
             }
         }
         return false;
     }
+    
     public function calculateMissionXP(){
         $tagsArray = json_decode($this->tags, true);
         $numTags = is_array($tagsArray['tagnames']) ? count($tagsArray['tagnames']) : 0;
@@ -85,9 +98,10 @@ class Mission
         return $flag;
     }
     public function renewFlag(){
-        $query = "UPDATE ctfs SET flag = ? WHERE name = ?;";
-        $this->setFlag($this->generateFlag());
-        return $this->app->executeQuery($query, [$this->getFlag(), $this->getName()], "ss");
+        $query = "UPDATE ctfs SET uflag = ?, rflag = ? WHERE name = ?;";
+        $this->setuFlag($this->generateFlag());
+        $this->setrFlag($this->generateFlag());
+        return $this->app->executeQuery($query, [$this->getuFlag(), $this->getrFlag(), $this->getName()], "sss");
     }
     // Métodos getters para acceder a las propiedades
     public function getId()
@@ -112,9 +126,13 @@ class Mission
     {
         return $this->icon;
     }
-    public function getFlag()
+    public function getuFlag()
     {
-        return $this->flag;
+        return $this->uflag;
+    }
+    public function getrFlag()
+    {
+        return $this->rflag;
     }
     public function getDescription()
     {
@@ -150,9 +168,13 @@ class Mission
     {
         $this->difficulty = $difficulty;
     }
-    public function setFlag($flag)
+    public function setuFlag($flag)
     {
-        $this->flag = $flag;
+        $this->uflag = $flag;
+    }
+    public function setrFlag($flag)
+    {
+        $this->rflag = $flag;
     }
     public function setIcon($icon)
     {

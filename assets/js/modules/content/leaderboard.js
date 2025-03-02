@@ -10,10 +10,10 @@ export function loadLeaderBoardContent() {
             // Procesamos la respuesta JSON y construimos el contenido dinámicamente
             let leaderboardContent = `
                 <div class="center-container">
-                    <h1>🏆 Leaderboard 🏆</h1>
+                    <h1>🏆 Mejores Cylons 🏆</h1>
                     <div class="leaderboard-container">
                         <div class="box">
-                            <h2>Top 5 Cylons</h2>
+                            <h2>Top 10 Cylons</h2>
                             <ol class="leaderboard-list">
             `;
 

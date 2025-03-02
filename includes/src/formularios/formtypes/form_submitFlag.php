@@ -9,13 +9,13 @@ class FormSubmitFlag extends Form {
         $flag = filter_input(INPUT_POST, 'flag', FILTER_SANITIZE_STRING);
         $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
 
-        if (!$this->validateInputs($missionId, $flag)) {
+        if (!$this->validateInputs($missionId, $flag, $type)) {
             return;
         }       
         
         $this->validateFlag($missionId, $flag, $type);    
     }
-    private function validateInputs($missionId,$flag) {
+    private function validateInputs($missionId,$flag, $type) {
         if (empty($missionId) || empty($flag) || empty($type)) {
             $this->setMessageAndRedirect("Por favor, completa todos los campos.");
             return false;
@@ -45,9 +45,9 @@ class FormSubmitFlag extends Form {
             $isRootFlag = $type === "root" ? 1 : 0;
             if ($misionComprobar->comprobarFlag($flag, $isRootFlag)) {
                 $usuario = new Usuario($this->app, (int)$_SESSION["id"]);
-                $xp = $misionComprobar->calculateMissionXP();
+                $xp = $isRootFlag === 1 ? $misionComprobar->calculateMissionXP()*2 : $misionComprobar->calculateMissionXP();
                 if($usuario->getExistence()){
-                    if($usuario->misionCompletada($misionComprobar->getId()) !== false){
+                    if($usuario->misionCompletada($misionComprobar->getId(), $isRootFlag) !== false){
                         if($usuario->añadirXp($xp)){
                             $_SESSION["xp"] = $usuario->getXp();
                             $this->setMessageAndRedirect("Mision completada, XP añadida: " . $xp);
@@ -56,7 +56,7 @@ class FormSubmitFlag extends Form {
                         }
                         
                     }else{
-                        $this->setMessageAndRedirect("Esta mision ya ha sido completada!!!");
+                        $this->setMessageAndRedirect("Esta flag ya ha sido previamente usada!!!");
                     }
                 }
             } else {
