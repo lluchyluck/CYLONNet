@@ -11,7 +11,7 @@ abstract class Form{
     
     protected function setMessageAndRedirect($message) {
         $_SESSION["mensaje"] = $message;
-        header("Location: ../../../view/blueprint.php");
+        header("Location: ../../../index.php");
         exit();
     }
 }

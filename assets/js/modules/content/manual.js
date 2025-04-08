@@ -23,22 +23,22 @@ export function loadManualContent() {
       <ul class="menu">
         <li>
           <a href="#introduccion">
-            <img src="icon1.png" alt="Icono Introducción"> Introducción
+            Introducción
           </a>
         </li>
         <li>
           <a href="#ade">
-            <img src="icon3.png" alt="Icono Antes de Empezar"> Antes de Empezar
+            Antes de Empezar
           </a>
         </li>
         <li>
           <a href="#misiones">
-            <img src="icon2.png" alt="Icono Misiones"> Misiones
+            Misiones
           </a>
         </li>
         <li>
           <a href="#contacto">
-            <img src="icon4.png" alt="Icono Contacto"> Contacto
+           Contacto
           </a>
         </li>
       </ul>

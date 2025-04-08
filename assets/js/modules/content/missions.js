@@ -17,7 +17,7 @@ export function loadMissionsContent() {
   
     // Cargar las misiones dinámicamente desde el servidor
     $.ajax({
-      url: '../includes/src/getters/get_missions.php', // Archivo PHP que devuelve las misiones
+      url: './includes/src/getters/get_missions.php', // Archivo PHP que devuelve las misiones
       method: 'GET',
       success: function (missions) {
         const missionGrid = $('#mission-grid');
@@ -83,7 +83,7 @@ export function loadMissionsContent() {
   
     // Cargar las etiquetas dinámicamente desde el servidor
     $.ajax({
-      url: '../includes/src/getters/get_tags.php', // Archivo PHP que devuelve las etiquetas
+      url: './includes/src/getters/get_tags.php', // Archivo PHP que devuelve las etiquetas
       method: 'GET',
       success: function (tags) {
         let tagList = tags;
@@ -117,49 +117,70 @@ export function loadMissionsContent() {
       });
     });
   }
-  function showMissionPopup(title, description, image, id) {
+  function showMissionPopup(title, descriptions, image, id) {
+    // Si "descriptions" es un string, lo convertimos en un array separando por saltos de línea.
+    if (typeof descriptions === 'string') {
+      descriptions = descriptions.split('\n').filter(phrase => phrase.trim() !== "");
+    }
+    
+    let currentIndex = 0;
     const popupHTML = `
       <div class="mission-popup">
-        <div class="mission-image">
-         <img src="${image}" alt="Misión">
-         <div class="mission-popup-content">
-            <span class="close-popup">&times;</span>
+        <div class="mission-container">
+          <span class="close-popup">&times;</span>
+          <div class="mission-image">
+            <img src="${image}" alt="Personaje - Misión">
+          </div>
+          <div class="mission-popup-content" style="flex: 1; margin: 0;">
             <h2>${title}</h2>
-            <h3>Mission Details:</h3>
-            <p>${description}</p>
-            <button class="button start-mission">Start Mission</button>
+            <div class="mission-textbox">
+              <p class="mission-description">${descriptions[currentIndex]}</p>
+            </div>
+            <button class="button start-mission">Iniciar Misión</button>
           </div>
         </div>
-        
       </div>
     `;
-  
+    
     $('body').append(popupHTML);
     $('.mission-popup').fadeIn();
-  
-    $('.close-popup, .mission-popup').click(function (e) {
+    
+    // Al hacer clic en el cuadro de texto, muestra la siguiente frase
+    $('.mission-textbox').click(function(e) {
+      e.stopPropagation();
+      currentIndex++;
+      if (currentIndex < descriptions.length) {
+        $('.mission-description').fadeOut(200, function() {
+          $(this).text(descriptions[currentIndex]).fadeIn(200);
+        });
+      }
+    });
+    
+    // Cerrar la ventana emergente al hacer clic en la "X" o fuera del contenedor
+    $('.close-popup, .mission-popup').click(function(e) {
       if (e.target === this) {
-        $('.mission-popup').fadeOut(function () {
+        $('.mission-popup').fadeOut(function() {
           $(this).remove();
         });
       }
     });
-  
-    $('.start-mission').click(function () {
-      const missionId = id; // Aquí obtén el ID de la misión o el nombre del contenedor que quieres iniciar
+    
+    // Iniciar la misión al hacer clic en el botón
+    $('.start-mission').click(function() {
       $.ajax({
-          url: '../includes/src/start_mission.php', // Cambia esto a la ruta de tu archivo PHP
-          type: 'POST',
-          data: { missionId: missionId }, // Envía el ID de la misión al servidor
-          success: function(response) {
-              alert(response);
-              $('.mission-popup').fadeOut(function () {
-                  $(this).remove();
-              });
-          },
-          error: function(xhr, status, error) {
-              alert('Error al empezar el laboratorio: ' + error);
-          }
+        url: './includes/src/start_mission.php', // Ajusta la ruta según corresponda
+        type: 'POST',
+        data: { missionId: id },
+        success: function(response) {
+          alert(response);
+          $('.mission-popup').fadeOut(function() {
+            $(this).remove();
+          });
+        },
+        error: function(xhr, status, error) {
+          alert('Error al iniciar la misión: ' + error);
+        }
       });
-  });
+    });
+  
   }

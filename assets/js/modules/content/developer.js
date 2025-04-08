@@ -1,7 +1,7 @@
 
 export function selectDeveloperContent() {
     $.ajax({
-      url: '../includes/src/getters/get_developer.php', // Archivo PHP que devuelve las misiones
+      url: './includes/src/getters/get_developer.php', // Archivo PHP que devuelve las misiones
       method: 'GET',
       success: function (response) {
         if (response === "1") {
@@ -157,7 +157,7 @@ export function selectDeveloperContent() {
   function uploadChunk(formData, chunkIndex, totalChunks) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', './../includes/src/upload.php', true);
+      xhr.open('POST', './includes/src/upload.php', true);
   
       xhr.onload = function () {
         if (xhr.status === 200 && xhr.responseText === "OK") {
@@ -198,7 +198,7 @@ export function selectDeveloperContent() {
             <br><br>
   
             <div class="toggle-content">
-                <form id="add-mission" action="../includes/src/formularios/formHandler.php" method="POST" enctype="multipart/form-data">
+                <form id="add-mission" action="./includes/src/formularios/formHandler.php" method="POST" enctype="multipart/form-data">
                     <input type="text" name="mission_name" placeholder="Nombre de la misión" required><br>
                     <textarea name="mission_description" placeholder="Descripción de la misión" rows="4" required></textarea><br>
                     <textarea name="mission_tags" id="mission_tags" placeholder="Inserta tags con el select..." rows="2" readonly placeholder="Tags seleccionados" required></textarea>
@@ -238,7 +238,7 @@ export function selectDeveloperContent() {
             
             <!-- Imagen de administrador -->
             <div class="toggle-content" style="display: none;">
-                <form id="add-admin" action="../includes/src/formularios/formHandler.php" method="POST">
+                <form id="add-admin" action="./includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="username" placeholder="Username" required><br>
                     <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="add_admin_button" class="button">Añadir Administrador</button>
@@ -254,7 +254,7 @@ export function selectDeveloperContent() {
             <br><br>
   
             <div class="toggle-content">
-                <form id="remove-mission" action="../includes/src/formularios/formHandler.php" method="POST">
+                <form id="remove-mission" action="./includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="mission_name" placeholder="Nombre de la misión" required><br>
                     <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="remove_mission_button" class="button">Eliminar Misión</button>
@@ -271,7 +271,7 @@ export function selectDeveloperContent() {
             <br><br>
   
             <div class="toggle-content">
-                <form id="remove-admin" action="../includes/src/formularios/formHandler.php" method="POST">
+                <form id="remove-admin" action="./includes/src/formularios/formHandler.php" method="POST">
                     <input type="text" name="admin_name" placeholder="Nombre de usuario del administrador" required><br>
                     <input type="hidden" name="token" value="${csrfToken}">
                     <button type="submit" name="remove_admin_button" class="button">Eliminar Administrador</button>
@@ -316,7 +316,7 @@ export function selectDeveloperContent() {
       $(this).siblings('.toggle-content').slideToggle();
     });
     $.ajax({
-      url: '../includes/src/getters/get_tags.php', // Archivo PHP que devuelve las etiquetas
+      url: './includes/src/getters/get_tags.php', // Archivo PHP que devuelve las etiquetas
       method: 'GET',
       success: function (tags) {
         let tagList = tags;

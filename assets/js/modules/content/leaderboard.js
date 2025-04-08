@@ -3,7 +3,7 @@ import { loadProfileContent } from './profile.js';
 export function loadLeaderBoardContent() {
     // Realizamos el llamado AJAX
     $.ajax({
-        url: './../includes/src/getters/get_top5.php',  // URL de la API que devuelve los datos en formato JSON
+        url: './includes/src/getters/get_top5.php',  // URL de la API que devuelve los datos en formato JSON
         type: 'GET',
         dataType: 'json',
         success: function(data) {

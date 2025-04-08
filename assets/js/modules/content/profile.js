@@ -3,7 +3,7 @@ import { loadContent } from "./../contentHandler.js";
 export function loadProfileContent(user) {
     if(user !== ''){
         $.ajax({
-            url: `./../includes/src/getters/get_profile.php?username=${user}`,
+            url: `./includes/src/getters/get_profile.php?username=${user}`,
             type: 'GET',
             dataType: 'json',
             success: function(data) {
@@ -26,7 +26,7 @@ export function loadProfileContent(user) {
                         <div class="box">
                             <h1 style="display: flex; align-items: center; gap: 10px;">
                                 <div class="profile-pic-container">
-                                    <img src="./../assets/images/profile${icon}" style="width: 100px; height: 100px;" alt="Profile picture" class="profile-pic">
+                                    <img src="./assets/images/profile${icon}" style="width: 100px; height: 100px;" alt="Profile picture" class="profile-pic">
                                     <img id="rank-badge-user" class="rank-badge" src="${levelImg}" style="height: 70px; width: auto;">
                                 </div>
                                 <div>
