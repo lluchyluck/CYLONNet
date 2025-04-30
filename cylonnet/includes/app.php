@@ -18,10 +18,17 @@ class Aplicacion
     public function getConexionBd()
     {
         if (!isset($this->db)) {
+            #-----PARA DESPLIEGUE FINAL-----
             $bdHost = "db";
             $bdUser = "cylon_adm";
             $bdPass = "cambia_esto";
             $bdName = "CYLONNet";
+            #-----PARA DESARROLLO LOCAL-----
+            #$bdHost = "localhost";
+            #$bdUser = "root";
+            #$bdPass = "";
+            #$bdName = "CYLONNet";
+
 
             $db = @mysqli_connect($bdHost, $bdUser, $bdPass, $bdName);
             if ($db) {
@@ -142,7 +149,7 @@ class Aplicacion
     }
     public function getUserTop()
 {
-    $query = "SELECT id, username, xp, icon FROM users ORDER BY xp DESC LIMIT 10";
+    $query = "SELECT id, username, xp, icon FROM users WHERE id != 1 ORDER BY xp DESC LIMIT 10";
     $output = [];
     if ($this->executeQuery($query, [], "", $output)) {
         return $output;
@@ -176,5 +183,4 @@ class Aplicacion
         $result = $this->fetchAll("SELECT tagname FROM tags");
         return array_column($result, "tagname");
     }
-    
 }

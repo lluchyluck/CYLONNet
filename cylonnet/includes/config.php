@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
         $_SESSION["username"] = 'guest';
     if (!isset($_SESSION["login"]))
         $_SESSION["login"] = false;
-    if (!isset($_SESSION["develper"]))
+    if (!isset($_SESSION["developer"]))
         $_SESSION["developer"] = false;
 }
 

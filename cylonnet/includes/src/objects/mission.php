@@ -46,7 +46,7 @@ class Mission
     {
         $tagsJson = json_encode(['tagnames' => array_map('trim', explode(',', $this->getTags()))]);
         $queryInsertMission = "INSERT INTO ctfs (id, name, description, tags, difficulty, icon, dockerlocation) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, ucompletado, rcompletado, creada) VALUES (?, ?, ?, ?)";
+        $queryInsertAuthor = "INSERT INTO userxctf (id_user, id_ctf, ucompletado, rcompletado, creada) VALUES (?, ?, ?, ?, ?)";
         return ($this->app->executeQuery($queryInsertMission, [$this->getId(), $this->getName(), $this->getDescription(), $tagsJson, $this->getDifficulty(), $this->getIcon(), $this->getDockerloc()], "isssiss")) && ($this->app->executeQuery($queryInsertAuthor, [$_SESSION["id"],$this->getId(), false,false, true], "iiiii"));
     }
     public function eliminarDB()

@@ -18,6 +18,7 @@ services:
     build: .
     volumes:
       - ./cylonnet:/var/www/html
+      - ./php/conf.d/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
       - cylonnet-net
     environment:

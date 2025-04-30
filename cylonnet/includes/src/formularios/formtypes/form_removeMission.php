@@ -7,7 +7,7 @@ class FormRemoveMission extends Form {
     public function handle() {
         
         
-        $name = filter_input(INPUT_POST, 'mission_name', FILTER_SANITIZE_STRING);
+        $name = filter_input(INPUT_POST, 'mission_name', FILTER_DEFAULT);
         
         
         if (!$this->validateInputs($name)) {

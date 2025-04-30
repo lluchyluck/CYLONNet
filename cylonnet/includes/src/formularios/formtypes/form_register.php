@@ -74,7 +74,7 @@ class FormRegister extends Form {
     }
 
     private function handleImageUpload($img) {
-        $ruta_destino = $_SERVER['DOCUMENT_ROOT'] . "/cylonnet/assets/images/profile/" . basename($img["name"]);
+        $ruta_destino = __DIR__ . '/../../../../assets/images/profile/' . basename($img["name"]);
 
         if (!move_uploaded_file($img['tmp_name'], $ruta_destino)) {
             $this->setMessageAndRedirect("Error al guardar la imagen en el servidor.");

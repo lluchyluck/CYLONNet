@@ -84,11 +84,12 @@ CREATE TABLE `users` (
   `icon` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-VALUES ('cylon_adm', 'cylon_adm@example.com', MD5('your_secure_password'), 0, 1, 'default_icon.png');VALUES ('cylon_adm', 'cylon_adm@ucm.es', '$2y$10$ztnw4wddJq5oct44wMfJrOxEtmk0L/XlBl.FOyYOyC1hd4guuYE8i', 0, 1, '/icon.gif');
+
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `xp`, `developer`, `icon`) VALUES (1, 'cylon_adm', 'cylon_adm@ucm.es', '$2y$10$aCzZSQ5FFTVelXWzfRN9Q.x0cEJUKziMBj.5EBeuIodtMSwe1/UuO', 0, 1, '/icon.gif');
 
 -- --------------------------------------------------------
 
---
+-- my_secure_password
 -- Estructura de tabla para la tabla `userxctf`
 --
 

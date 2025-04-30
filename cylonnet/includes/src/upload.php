@@ -48,7 +48,8 @@ function validateImage($image)
 
 function handleImageUpload($img)
 {
-    $rutaDestino = $_SERVER['DOCUMENT_ROOT'] . "/cylonnet/assets/images/missions/" . basename($img['name']);
+    $rutaDestino = __DIR__ . '/../../assets/images/missions/' . basename($img['name']);
+
 
     if (!move_uploaded_file($img['tmp_name'], $rutaDestino)) {
         echo "Error al guardar la imagen en el servidor.";
@@ -88,12 +89,12 @@ function validateInputs($name, $description, $tags, $difficulty, $image)
 
 function handleMission($app)
 {
-    $name = filter_input(INPUT_POST, 'missionName', FILTER_SANITIZE_STRING);
-    $description = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_STRING);
-    $tags = filter_input(INPUT_POST, 'tags', FILTER_SANITIZE_STRING);
-    $difficulty = filter_input(INPUT_POST, 'difficulty', FILTER_VALIDATE_INT);
+    $name = filter_input(INPUT_POST, 'missionName', FILTER_DEFAULT);
+    $description = filter_input(INPUT_POST, 'descripcion', FILTER_DEFAULT);
+    $tags = filter_input(INPUT_POST, 'tags', FILTER_DEFAULT);
+    $difficulty = filter_input(INPUT_POST, 'difficulty', FILTER_DEFAULT);
     $img = ($_FILES['icon']['size'] > 0) ? $_FILES['icon'] : null;
-    $dockerLoc = "/" . basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
+    $dockerLoc = "/" . basename(filter_input(INPUT_POST, 'fileName', FILTER_DEFAULT));
 
     if (!validateInputs($name, $description, $tags,$difficulty, $img)) {
         return false;
@@ -122,7 +123,7 @@ function upload($app)
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
         $chunkIndex = intval($_POST['chunkIndex']);
         $totalChunks = intval($_POST['totalChunks']);
-        $fileName = basename(filter_input(INPUT_POST, 'fileName', FILTER_SANITIZE_STRING));
+        $fileName = basename(filter_input(INPUT_POST, 'fileName', FILTER_DEFAULT));
         $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
         
         if ($chunkIndex === 0 && !handleMission($app)) {

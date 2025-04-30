@@ -66,9 +66,9 @@ require_once "./includes/config.php";
                     height="50">Clasificación</a>
             <a data-page="manual"><img src="./assets/images/menu/manual.png" alt="Manual icon" width="50"
                     height="50">Manual</a>
-            <?php if (($_SESSION["developer"] === true) && isset($_SESSION["developer"]))
-                echo '<a data-page="developer"><img src="./assets/images/menu/gearwheel.png" alt="Dev icon" width="50" height="50">Admin</a>'
-            ?>
+            <?php if ($_SESSION["developer"] === true) {
+                echo '<a data-page="developer"><img src="./assets/images/menu/gearwheel.png" alt="Dev icon" width="50" height="50">Admin</a>';
+            } ?>
         </nav>
         <main class="content" id="content">
             <!-- El contenido se carga  dinamicamente -->
