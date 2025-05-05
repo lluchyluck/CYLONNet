@@ -56,6 +56,13 @@ CREATE TABLE `tags` (
 INSERT INTO `tags` (`tagname`) VALUES
 ('Base64'),
 ('Bash'),
+('PHP'),
+('Python'),
+('JavaScript'),
+('HTML'),
+('CSS'),
+('XML'),
+('JSON'),
 ('CSRF'),
 ('Injection'),
 ('LFI'),
@@ -66,7 +73,24 @@ INSERT INTO `tags` (`tagname`) VALUES
 ('SessionHijacking'),
 ('SQLInjection'),
 ('XSS'),
-('XXE');
+('Bruteforce'),
+('CommandInjection'),
+('Cryptography'),
+('DOS'),
+('DirectoryTraversal'),
+('FileUpload'),
+('InsecureDeserialization'),
+('LDAPInjection'),
+('NoSQLInjection'),
+('PathTraversal'),
+('RaceCondition'),
+('SSRF'),
+('CVE'),
+('XXE'),
+('SSTI'),
+('RCE'),
+('XMLInjection'),
+('BufferOverflow');
 
 -- --------------------------------------------------------
 

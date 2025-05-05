@@ -535,69 +535,73 @@ textarea:focus {
 
 
 
-
 .mission-popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.8);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 2000;
 }
 
-/* Contenedor central con estilo retro (tipo Nintendo) */
-.mission-container {
-  background: #fff;
-  border: 4px solid #000;
-  width: 600px;
-  max-width: 90%;
-  padding: 20px;
-  position: relative;
-  text-align: center;
-}
-
-/* Contenedor de la imagen con formato rectangular */
-.mission-image img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Cuadro de texto con estilo retro */
-.mission-textbox {
+.mission-popup-content {
   background: #000;
-  color: #fff;
-  padding: 15px;
-  margin-top: 15px;
-  cursor: pointer;
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  color: #FFD700;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  position: relative;
 }
 
-/* Botón para iniciar la misión */
-.button.start-mission {
-  margin-top: 15px;
-  background: #e50914;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 1em;
-}
-
-/* Botón para cerrar la ventana */
 .close-popup {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #FFD700;
   cursor: pointer;
-  font-size: 28px;
+  transition: transform 0.2s ease;
+}
+.close-popup:hover {
+  transform: rotate(90deg);
+}
+
+.mission-image {
+  margin: 0 auto 1rem;
+  width: 100%;
+  max-height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mission-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.start-mission {
+  display: inline-block;
+  margin: 1.5rem auto 0;
+  background: #FFD700;
   color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.start-mission:hover {
+  opacity: 0.8;
 }

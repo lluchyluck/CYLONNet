@@ -51,8 +51,6 @@ services:
       - ./nginx/conf.d:/app/nginx/conf.d
     networks:
       - cylonnet-net
-    ports:
-      - "8000:8000"   # API HTTP
 
 networks:
   cylonnet-net:

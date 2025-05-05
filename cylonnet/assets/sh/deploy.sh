@@ -31,18 +31,28 @@ if [ -z "$RESPONSE" ]; then
   exit 1
 fi
 
-echo "{\"tar_path\": \"/app/sh/labos$TAR\", \"uflag\": \"$U\", \"rflag\": \"$R\", \"lab\": \"$SUBDOM\"}"
-echo "$RESPONSE" | jq .
-
 # 2) Si todo fue OK, recarga NGINX
 STATUS=$(echo "$RESPONSE" | jq -r .status)
 if [[ "$STATUS" == "ok" ]]; then
-  echo "Recargando NGINX en el contenedor 'web'..."
   docker exec cylonnet_web_1 nginx -s reload > /dev/null 2>&1
   echo "¡Nginx recargado!"
 else
-  echo "Error en despliegue, no se recargará NGINX."
-  echo "Detalles del error: $RESPONSE"
-  echo $TAR
+  echo "Error en el despliegue: $RESPONSE"
   exit 1
 fi
+
+echo "==============================================="
+echo "       ¡Despliegue completado con éxito!       "
+echo "==============================================="
+echo ""
+echo "Por favor, añade el siguiente bloque a tu archivo /etc/hosts:"
+echo ""
+echo "    IP_SERVIDOR    $SUBDOM"
+echo ""
+echo "Una vez hecho eso, podrás acceder a tu laboratorio en:"
+echo ""
+echo "    http://$SUBDOM"
+echo ""
+echo "==============================================="
+echo "Nota: El laboratorio se eliminará automáticamente en 60 minutos."
+echo "==============================================="

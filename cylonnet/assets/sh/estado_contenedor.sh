@@ -16,7 +16,6 @@ fi
 TAR_FILE="./../../assets/sh/labos$1"
 API_URL="http://orquestador:8000"
 
-echo $TAR_FILE
 
 # Deriva el nombre del lab y del contenedor
 if [ ! -f "$TAR_FILE" ]; then
@@ -35,9 +34,10 @@ HTTP_CODE=$(curl -v -o /dev/null -w "%{http_code}" \
   -d "{\"lab\":\"${LAB_NAME}\"}")
 
 if [ "$HTTP_CODE" -eq 200 ]; then
-  echo "[+] El contenedor ${LAB_NAME} está detenido."
+  echo "[+] El contenedor ${LAB_NAME} está detenido o no existe."
   exit 0
 else
   echo "[!] El contenedor ${LAB_NAME} está en ejecución."
+  docker exec cylonnet_web_1 nginx -s reload > /dev/null 2>&1
   exit 1
 fi

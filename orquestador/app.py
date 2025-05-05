@@ -3,9 +3,9 @@
 import os
 import re
 import subprocess
-import tempfile
 from flask import Flask, request, jsonify, abort
 import docker
+import threading
 
 app = Flask(__name__)
 client = docker.DockerClient(base_url='unix://var/run/docker.sock')
@@ -13,37 +13,40 @@ client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 NGINX_CONF_DIR = '/app/nginx/conf.d'
 LABOS_DIR = '/app/sh/labos'
 LAB_NET_PREFIJO = 'lab_'
-TTL_LABORATORIO = 30
+TTL_LABORATORIO = 60  # minutos
 # Permite letras, dígitos, guiones y guiones bajos en cada etiqueta
 SUBDOMAIN_RE = re.compile(r'^[A-Za-z0-9](?:[A-Za-z0-9_\-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9_\-]*[A-Za-z0-9])?)*$')
 
-@app.route('/cleanup', methods=['POST'])
-def cleanup():
+@app.route('/estado', methods=['POST'])
+def estado():
     data = request.get_json(force=True)
     if 'lab' not in data or not isinstance(data['lab'], str):
         abort(400, "Campo 'lab' obligatorio")
     name = data['lab']
     container_name = f"{name}_container"
-    # Eliminar contenedor e imagen antiguos
     try:
-        client.containers.get(container_name).remove(force=True)
+        container = client.containers.get(container_name)
+        if container.status == 'running':
+            return jsonify(status='running'), 409  # 409 Conflict si está corriendo
+        else:
+            return jsonify(status='not running'), 200
     except docker.errors.NotFound:
-        pass
-    try:
-        client.images.remove(name, force=True)
-    except docker.errors.ImageNotFound:
-        pass
-    return jsonify(status='ok'), 200
-
-
+        return jsonify(status='not running'), 200
+    
 def schedule_cleanup(container_name, image_id, net_name):
-    cleanup_cmd = (
-        f"docker rm -f {container_name} && "
-        f"docker rmi {image_id} && "
-        f"docker network rm {net_name}"
-    )
-    at_cmd = f'echo "{cleanup_cmd}" | at now + {TTL_LABORATORIO} minutes'
-    subprocess.run(at_cmd, shell=True, check=True)
+    def cleanup():
+        conf_path = os.path.join(NGINX_CONF_DIR, f"{container_name}.cylonnet.conf")
+        try:
+            subprocess.run(f"docker rm -f {container_name}", shell=True, check=True)
+            subprocess.run(f"docker rmi {image_id}", shell=True, check=True)
+            subprocess.run(f"docker network rm {net_name}", shell=True, check=True)
+            if os.path.exists(conf_path):
+                os.remove(conf_path)
+        except subprocess.CalledProcessError as e:
+            app.logger.error(f"Error during cleanup: {e}")
+
+    timer = threading.Timer(TTL_LABORATORIO * 60, cleanup)
+    timer.start()
 
 
 def make_nginx_conf(subdomain, target_ip):
@@ -95,7 +98,7 @@ def deploy():
 
     container_name = f'{name}_container'
 
-    # 5) Limpieza previa
+    # 5) Limpieza previa (se supone que el contenedor no está corriendo, se hace por si ocurre algun error)
     try:
         client.containers.get(container_name).remove(force=True)
     except docker.errors.NotFound:
@@ -120,7 +123,7 @@ def deploy():
             internal=False,
             attachable=True
         )
-    # Conectar proxy y orquestador a la red privada
+    # Conectar proxy y orquestador a la red privada para la comunicación
     for peer in ('cylonnet_web_1', 'cylonnet_orquestador_1'):
         try:
             net.connect(peer)
@@ -136,7 +139,7 @@ def deploy():
         labels={'lab': name},
         network=net.name
     )
-    # Conectar container al bridge para egress
+    # Red que permite la comunicación entre el contenedor y
     try:
         bridge = client.networks.get('bridge')
         bridge.connect(container)
@@ -163,4 +166,4 @@ def deploy():
     return jsonify({'status': 'ok', 'container': container.name, 'ip': ip, 'subdomain': subdomain}), 201
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000,debug=False)
