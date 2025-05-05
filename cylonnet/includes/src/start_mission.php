@@ -8,11 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     if ($mission->getExistence()) {
         $containerName = $mission->getDockerloc();
 
-        // Comando para iniciar el contenedor
+        // Comando para comprobar el contenedor
         $scriptPath = escapeshellcmd("./../../assets/sh/isReady.sh");
-        $containerPath = escapeshellarg("./../../assets/sh/labos" . $containerName);
+        $containerPath = escapeshellarg($containerName);
         $isReadyCommand = "$scriptPath $containerPath";
-        // Ejecutar el comando y capturar el output y código de salida
         $output = [];
         $returnCode = 0;
         exec($isReadyCommand, $output, $returnCode);
@@ -23,9 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
             error_log("Error in deploy.sh: " . implode("\n", $output));
             exit;
         }
+
+        // Comando para iniciar el contenedor
         $scriptPath = escapeshellcmd("./../../assets/sh/deploy.sh");
-        $uflag = escapeshellarg("FELICIDADES CYLON, USER FLAG{" . $mission->getuFlag() . "}");
-        $rflag = escapeshellarg("FELICIDADES CYLON, ROOT FLAG{" . $mission->getrFlag() . "}");
+        $uflag = escapeshellarg("FELICIDADES CYLON, USER FLAG: " . $mission->getuFlag());
+        $rflag = escapeshellarg("FELICIDADES CYLON, ROOT FLAG: " . $mission->getrFlag());
         $initCommand = "$scriptPath $containerPath $uflag $rflag";
 
         

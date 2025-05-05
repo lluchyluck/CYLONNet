@@ -29,7 +29,6 @@ class Mission
             $this->difficulty = $missionExist['difficulty'];
             $this->icon = $missionExist['icon'];
             $this->dockerlocation = $missionExist['dockerlocation'];
-            $this->uflag = $missionExist['flag'];
             $this->exist = true;
         }else{
             $this->name = $name;

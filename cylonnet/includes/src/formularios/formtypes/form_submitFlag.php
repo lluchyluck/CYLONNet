@@ -5,9 +5,9 @@ require_once __DIR__ ."/../../objects/mission.php";
 
 class FormSubmitFlag extends Form {
     public function handle() {
-        $missionId = filter_input(INPUT_POST, 'missionId', FILTER_VALIDATE_INT);
-        $flag = filter_input(INPUT_POST, 'flag', FILTER_SANITIZE_STRING);
-        $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
+        $missionId = filter_input(INPUT_POST, 'missionId', FILTER_DEFAULT);
+        $flag = filter_input(INPUT_POST, 'flag', FILTER_DEFAULT);
+        $type = filter_input(INPUT_POST, 'type', FILTER_DEFAULT);
 
         if (!$this->validateInputs($missionId, $flag, $type)) {
             return;

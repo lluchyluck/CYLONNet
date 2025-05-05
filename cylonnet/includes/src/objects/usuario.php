@@ -24,7 +24,7 @@ class Usuario
             $this->password = $userExist['password'];
             $this->email = $userExist['email'];
             $this->xp = $userExist['xp'];
-            $this->img = $userExist['img'];
+            $this->img = $userExist['icon'];
             $this->exist = true;
         } else {
             $this->username = $username;
