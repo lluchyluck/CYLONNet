@@ -66,6 +66,11 @@ server {{
     path = os.path.join(NGINX_CONF_DIR, f'{subdomain}.conf')
     with open(path, 'w') as f:
         f.write(conf)
+    
+    try:
+        subprocess.run("docker exec cylonnet_web_1 nginx -s reload", shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        abort(500, "Error recargando la configuracion de nginx: " + str(e))
 
 @app.route('/deploy', methods=['POST'])
 def deploy():

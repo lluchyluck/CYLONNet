@@ -164,7 +164,7 @@ export function loadManualContent() {
           </p>
           <p>Ejemplo de Dockerfile:</p>
           <div class="box" style="width: 1050px;"><pre><code># Utilizamos una versión específica de Ubuntu para mayor reproducibilidad
-FROM ubuntu:latest
+FROM ubuntu:latest # OJO AQUI!!!!: en latest debemos poner la arquitectura de el host: ejemplo para raspberry pi: arm64v8/ubuntu:latest
 
 # Configuración de entorno para evitar prompts interactivos
 ENV DEBIAN_FRONTEND=noninteractive
@@ -226,6 +226,9 @@ RUN printf '#!/bin/bash\nservice mariadb start\nsleep 5\nservice apache2 start\n
 
 CMD ["/init.sh"]
 </code></pre></div>
+          <p>
+            IMPORTANE: Dependiendo de la arquitectura del host se pondran diferentes imagenes, en el caso de la raspberry pi se utilizara por ejemplo: arm64v8/ubuntu:latest.
+          </p>
         </article>
       </section>
       
