@@ -6,6 +6,7 @@ import subprocess
 from flask import Flask, request, jsonify, abort
 import docker
 import threading
+import time
 
 app = Flask(__name__)
 client = docker.DockerClient(base_url='unix://var/run/docker.sock')
@@ -139,6 +140,15 @@ def deploy():
         labels={'lab': name},
         network=net.name
     )
+    container.reload()
+    if container.status != 'running':
+        # breve espera y recarga
+        time.sleep(1)
+        container.reload()
+        time.sleep(2)
+        if container.status != 'running':
+            app.logger.error(f"Estado inesperado de {container.name}: {container.status}")
+            abort(500, "El contenedor no está en estado running")
     # Red que permite la comunicación entre el contenedor y
     try:
         bridge = client.networks.get('bridge')
