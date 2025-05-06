@@ -141,15 +141,14 @@ def deploy():
         network=net.name
     )
     container.reload()
-    if container.status != 'running':
-        # breve espera y recarga
+    timeout = 10  # Tiempo máximo de espera en segundos
+    start_time = time.time()
+    while container.status != 'running' and time.time() - start_time < timeout:
         time.sleep(1)
         container.reload()
-        time.sleep(2)
-        if container.status != 'running':
-            app.logger.error(f"Estado inesperado de {container.name}: {container.status}")
-            abort(500, "El contenedor no está en estado running")
-    # Red que permite la comunicación entre el contenedor y
+    if container.status != 'running':
+        app.logger.error(f"Estado inesperado de {container.name}: {container.status}, puede que la arquitectura del lab no sea compatible u otro error")
+        abort(500, "El contenedor no está en estado running, puede que la arquitectura del lab no sea compatible u otro error")
     try:
         bridge = client.networks.get('bridge')
         bridge.connect(container)
