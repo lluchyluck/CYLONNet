@@ -1,0 +1,16 @@
+#!/bin/sh
+#establece permisos para carpetas
+chown -R www-data:www-data /var/www/html/assets/labs
+chmod -R 755 /var/www/html/assets/labs
+
+chown -R www-data:www-data /var/www/html/assets/images/missions
+chmod -R 755 /var/www/html/assets/images/missions
+
+chown -R www-data:www-data /var/www/html/assets/images/profile 
+chmod -R 755 /var/www/html/assets/images/profile
+
+chown -R www-data:www-data /var/www/html/includes/src/uploads
+chmod -R 755 /var/www/html/includes/src/uploads
+
+# Ejecuta el proceso original del contenedor
+exec docker-php-entrypoint php-fpm
