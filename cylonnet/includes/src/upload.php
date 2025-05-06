@@ -115,9 +115,12 @@ function handleMission($app)
 function upload($app)
 {
     $uploadDir = './uploads/';
-    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true) && !is_dir($uploadDir)) {
-        echo "Error al crear el directorio de subida.";
-        return ;
+
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            echo "Error: No se pudo crear el directorio de subida.";
+            return;
+        }
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
