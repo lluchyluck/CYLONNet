@@ -133,6 +133,7 @@ function upload($app)
             return ;
         }
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
+            chmod($tempFilePath, 0744); // Set appropriate permissions for the part file
             
             if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) {
                 combineChunks($uploadDir, $fileName, $totalChunks);
