@@ -1,7 +1,7 @@
 #!/bin/sh
 #establece permisos para carpetas
-chown -R www-data:www-data /var/www/html/assets/labs
-chmod -R 755 /var/www/html/assets/labs
+chown -R www-data:www-data /var/www/html/assets/sh/labos
+chmod -R 755 /var/www/html/assets/sh/labos
 
 chown -R www-data:www-data /var/www/html/assets/images/missions
 chmod -R 755 /var/www/html/assets/images/missions

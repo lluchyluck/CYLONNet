@@ -133,7 +133,7 @@ function upload($app)
             return ;
         }
         if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
-            chmod($tempFilePath, 0744); // Set appropriate permissions for the part file
+            chmod($tempFilePath, 0774); // Set appropriate permissions for the part file
             
             if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) {
                 combineChunks($uploadDir, $fileName, $totalChunks);
@@ -162,8 +162,8 @@ function combineChunks($uploadDir, $fileName, $totalChunks)
     $dockerPath = "./../../assets/sh/labos/";
     $finalFilePath = $dockerPath . $fileName;
 
-    if (!is_dir($dockerPath) && !mkdir($dockerPath, 0755, true) && !is_dir($dockerPath)) {
-        echo "Error al crear el directorio de destino.";
+    if (!is_dir($dockerPath)) {
+        echo "Error: el directorio de destino no existe.";
         return;
     }
 
