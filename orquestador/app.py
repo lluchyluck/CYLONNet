@@ -141,7 +141,7 @@ def deploy():
         network=net.name
     )
     container.reload()
-    timeout = 10  # Tiempo máximo de espera en segundos
+    timeout = 20  # Tiempo máximo de espera en segundos
     start_time = time.time()
     while container.status != 'running' and time.time() - start_time < timeout:
         time.sleep(1)
