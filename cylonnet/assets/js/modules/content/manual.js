@@ -229,6 +229,19 @@ CMD ["/init.sh"]
           <p>
             IMPORTANE: Dependiendo de la arquitectura del host se pondran diferentes imagenes, en el caso de la raspberry pi se utilizara por ejemplo: arm64v8/ubuntu:latest.
           </p>
+          <p>
+            Si se desea compilar un dockerfile para una arquitectura diferente a la del host, se puede utilizar el siguiente comando (utilidad buildx):
+            <div class="box" style="width: 1050px;"><pre><code> 
+            # Instala binfmt para soportar múltiples arquitecturas
+            docker run --rm --privileged tonistiigi/binfmt --install all
+
+            # Compila ARMv7
+            docker buildx build --platform linux/arm/v7 -t labo:armv7 --load .
+
+            # Exporta
+            docker save labo:armv7 | gzip > labo_armv7.tar.gz
+            </code></pre></div>
+          </p>
         </article>
       </section>
       
