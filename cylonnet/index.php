@@ -46,9 +46,9 @@ require_once "./includes/config.php";
     <div class="profile-dropdown" id="profile-dropdown">
         <h3 onclick="profile('<?php if ($_SESSION['login'] === true)
             echo $_SESSION['username']; ?>')" style="cursor: pointer; color: inherit; transition: color 0.3s ease;"
-            onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';">Profile
+            onmouseover="this.style.filter='brightness(1.2)';" onmouseout="this.style.filter='brightness(1)';">Perfil
             <img id="rank-badgee" class="rank-badge" src=""></h3>
-        <p>Username: <span id="dropdown-username">Guest</span></p>
+        <p>Usuario: <span id="dropdown-username">Guest</span></p>
         <p>Email: <span id="dropdown-email">Not logged in</span></p>
         <?php if ($_SESSION["login"] === true)
             echo '<form action="./includes/src/formularios/formHandler.php" method="POST"><button type="submit" name="logout_button" class="button">Logout</button></form>';

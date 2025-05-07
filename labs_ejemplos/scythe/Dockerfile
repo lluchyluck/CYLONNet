@@ -15,6 +15,7 @@ RUN apt-get update && \
     mariadb-client \
     nano \
     vim \
+    less \
     php \
     libapache2-mod-php \
     php-mysql \

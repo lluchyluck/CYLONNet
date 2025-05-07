@@ -82,7 +82,7 @@ export function loadProfileContent(user) {
             },
             error: function(xhr, status, error) {
                 console.error(`Error en la solicitud AJAX: ${status} - ${error}`);
-                $('#content').html("<p>No se pudo cargar el perfil. Por favor, revisa tu conexión e intenta de nuevo.</p>");
+                $('#content').html("<p>No se pudo cargar el perfil. Por favor, revisa si estás registrado o tu conexión es inestable.</p>");
             }
         });
     }else{

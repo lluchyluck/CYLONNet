@@ -6,20 +6,20 @@ export function loadSubmitFlagContent(options) {
     // Ahora se utiliza 'missionId' y 'missionName' en el HTML que se genera
     $('#content').html(`
         <div class="box login-form" style="width: 750px;">
-            <h2>Submit flags for mission: ${missionName}</h3>
-            <h3>Submit user flag</h3>
+            <h2>Validar flags para la misión: ${missionName}</h2>
+            <h3>Validar user flag</h3>
             <form id="submitflag" action="./includes/src/formularios/formHandler.php" method="POST">
                 <input type="hidden" name="missionId" value="${missionId}">
                 <input type="hidden" name="type" value="user">
                 <input type="text" name="flag" required><br>
-                <button type="submit" name="flag_button" class="button">Submit user</button>
+                <button type="submit" name="flag_button" class="button">Validar user</button>
             </form>
-            <h3>Submit root flag</h3>
+            <h3>Validar root flag</h3>
             <form id="submitflag" action="./includes/src/formularios/formHandler.php" method="POST">
                 <input type="hidden" name="missionId" value="${missionId}">
                 <input type="hidden" name="type" value="root">
                 <input type="text" name="flag" required><br>
-                <button type="submit" name="flag_button" class="button">Submit root</button>
+                <button type="submit" name="flag_button" class="button">Validar root</button>
             </form>
         </div>
     `);
