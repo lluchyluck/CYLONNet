@@ -122,28 +122,33 @@ function upload($app)
             return;
         }
     }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName'])) {
+    //comprueba si eres admin y se ha recibido una peticion POST
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'], $_POST['chunkIndex'], $_POST['totalChunks'], $_POST['fileName']) && isset($_SESSION["developer"]) && $_SESSION["developer"] === true) {
         $chunkIndex = intval($_POST['chunkIndex']);
         $totalChunks = intval($_POST['totalChunks']);
-        $fileName = basename(filter_input(INPUT_POST, 'fileName', FILTER_DEFAULT));
+        $filteredFileName = filter_input(INPUT_POST, 'fileName', FILTER_DEFAULT);
+        if ($filteredFileName === false || $filteredFileName === null) {
+            echo "Error: Nombre de archivo no válido.";
+            return;
+        }
+        $fileName = basename($filteredFileName);
         $tempFilePath = $uploadDir . $fileName . '.part' . $chunkIndex;
         
         if ($chunkIndex === 0 && !handleMission($app)) {
             return ;
         }
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) {
-            chmod($tempFilePath, 0774); // Set appropriate permissions for the part file
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $tempFilePath)) { //va subiendo los fragmentos a el directorio de subida
+            chmod($tempFilePath, 0774); 
             
-            if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) {
-                combineChunks($uploadDir, $fileName, $totalChunks);
+            if (allChunksUploaded($uploadDir, $fileName, $totalChunks)) { 
+                combineChunks($uploadDir, $fileName, $totalChunks); //si estan todos los fragmentos, los combina
             }
             echo "OK";
         } else {
             echo "Error al subir el fragmento número " . $chunkIndex;
         }
     } else {
-        echo "ERROR";
+        echo "ERROR: puede que no seas un desarrollador!!!";
     }
 }
 

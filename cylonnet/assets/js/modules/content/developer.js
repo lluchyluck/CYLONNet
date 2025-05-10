@@ -110,7 +110,7 @@ export function selectDeveloperContent() {
   }
   
   
-  
+  //OJO: el formulario de añadir mision se sintetiza y se van enviando fragmentos
   // Configuración del tamaño de cada fragmento en bytes
   const CHUNK_SIZE = 20 * 1024 * 1024; // 10 MB
   

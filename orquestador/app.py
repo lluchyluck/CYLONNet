@@ -129,7 +129,7 @@ def deploy():
             internal=False,
             attachable=True
         )
-    # Conectar proxy y orquestador a la red privada para la comunicación
+    # Conectar nginx y orquestador a la red privada para la comunicación
     for peer in ('cylonnet_web_1', 'cylonnet_orquestador_1'):
         try:
             net.connect(peer)

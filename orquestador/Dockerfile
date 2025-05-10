@@ -1,7 +1,7 @@
 # cylonnet/orchestrator/Dockerfile
 FROM python:3.11-slim
 
-# Instala Docker SDK, Flask y at para programar limpieza
+# Instala las dependencias necesarias
 RUN apt-get update && \
     apt-get install -y --no-install-recommends at docker.io && \
     pip install --no-cache-dir flask docker && \
@@ -10,10 +10,8 @@ RUN apt-get update && \
 # Crea el directorio de la aplicación
 WORKDIR /app
 
-# Copia tu código de orquestación
 COPY app.py requirements.txt /app/
 
-# Directorios de soporte
 VOLUME [ "/var/run/docker.sock", "/app/sh", "/app/nginx/conf.d" ]
 
 EXPOSE 8000

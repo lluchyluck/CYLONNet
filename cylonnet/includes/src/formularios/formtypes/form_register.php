@@ -93,14 +93,14 @@ class FormRegister extends Form {
             $this->setMessageAndRedirect("El archivo no es una imagen válida.");
             return false;
         }
-        if ($image['size'] > 2 * 1024 * 1024) {
-            $this->setMessageAndRedirect("El tamaño de la imagen no debe superar los 2 MB.");
+        if ($image['size'] > 3 * 1024 * 1024) {
+            $this->setMessageAndRedirect("El tamaño de la imagen no debe superar los 3 MB.");
             return false;
         }
 
         list($width, $height) = getimagesize($image['tmp_name']);
-        if ($width > 400 || $height > 400 || $width !== $height) {
-            $this->setMessageAndRedirect("La imagen debe ser cuadrada y no exceder 400x400 píxeles.");
+        if ($width > 512 || $height > 512 || $width !== $height) {
+            $this->setMessageAndRedirect("La imagen debe ser cuadrada y no exceder 512x512 píxeles.");
             return false;
         }
 

@@ -1,5 +1,5 @@
 import { loadContent } from '../contentHandler.js';
-import { loadProfileContent } from './profile.js';
+import { loadProfileContent } from './profile.js'; //dependecias de modulos
 
 export function loadMissionsContent() {
     $('#content').html(`
@@ -17,11 +17,11 @@ export function loadMissionsContent() {
   
     // Cargar las misiones dinámicamente desde el servidor
     $.ajax({
-      url: './includes/src/getters/get_missions.php', // Archivo PHP que devuelve las misiones
+      url: './includes/src/getters/get_missions.php', // Archivo PHP en el backend que devuelve las misiones
       method: 'GET',
       success: function (missions) {
         const missionGrid = $('#mission-grid');
-        missionGrid.empty(); // Limpiar misiones anteriores
+        missionGrid.empty();
   
         missions.forEach(mission => {
   
@@ -165,10 +165,10 @@ export function loadMissionsContent() {
       }
     });
     
-    // Iniciar la misión al hacer clic en el botón
+    // Iniciar la misión al hacer clic en el botón start mission
     $('.start-mission').click(function() {
       $.ajax({
-        url: './includes/src/start_mission.php', // Ajusta la ruta según corresponda
+        url: './includes/src/start_mission.php', 
         type: 'POST',
         data: { missionId: id },
         success: function(response) {

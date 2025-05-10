@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_SESSION["login"] === true) {
     if ($mission->getExistence()) {
         $containerName = $mission->getDockerloc();
 
-        // Comando para comprobar el contenedor
+        // Comando para comprobar que el contenedor este ya iniciado
         $scriptPath = escapeshellcmd("./../../assets/sh/estado_contenedor.sh");
         $containerPath = escapeshellarg($containerName);
         $isReadyCommand = "$scriptPath $containerPath";

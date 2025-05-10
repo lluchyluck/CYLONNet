@@ -7,7 +7,7 @@ class FormRemoveAdmin extends Form {
     public function handle() {
         
         
-        $name = filter_input(INPUT_POST, 'admin_name', FILTER_SANITIZE_STRING);
+        $name = filter_input(INPUT_POST, 'admin_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         
         
         if (!$this->validateInputs($name)) {

@@ -9,7 +9,7 @@ abstract class Form{
 
     abstract public function handle();
     
-    protected function setMessageAndRedirect($message) {
+    protected function setMessageAndRedirect($message) { //logica de mensajes de sesion
         $_SESSION["mensaje"] = $message;
         header("Location: ../../../index.php");
         exit();

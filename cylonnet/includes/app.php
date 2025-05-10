@@ -74,7 +74,7 @@ class Aplicacion
             return false;
         }
 
-        // Si el parámetro $output no es null, obtener el resultado
+        // Si existen resultados, obtenerlos
         if ($output !== null) {
             $result = mysqli_stmt_get_result($stmt);
             if ($result) {
@@ -95,27 +95,20 @@ class Aplicacion
    
     public function nextId($table)
     {
-        $db = $this->getConexionBd();
         $query = "SELECT MAX(id) + 1 AS next_id FROM $table";
-        $result = mysqli_query($db, $query);
-        $row = mysqli_fetch_assoc($result);
-        mysqli_free_result($result);
-        return $row['next_id'] ?? 1;
+        $output = [];
+        if ($this->executeQuery($query, [], "", $output)) {
+            return $output[0]['next_id'] ?? 1;
+        }
+        return 1;
     }
     private function fetchAll($query)
     {
-        $db = $this->getConexionBd();
-        $result = mysqli_query($db, $query);
-
-        $data = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $data[] = $row;
-            }
-            mysqli_free_result($result); // Liberar el resultado
+        $output = [];
+        if ($this->executeQuery($query, [], "", $output)) {
+            return $output;
         }
-
-        return $data;
+        return [];
     }
 
     public function getAllUsers()
@@ -148,14 +141,14 @@ class Aplicacion
         return false;
     }
     public function getUserTop()
-{
-    $query = "SELECT id, username, xp, icon FROM users WHERE id != 1 ORDER BY xp DESC LIMIT 10";
-    $output = [];
-    if ($this->executeQuery($query, [], "", $output)) {
-        return $output;
+    {
+        $query = "SELECT id, username, xp, icon FROM users WHERE id != 1 ORDER BY xp DESC LIMIT 10";
+        $output = [];
+        if ($this->executeQuery($query, [], "", $output)) {
+            return $output;
+        }
+        return false;
     }
-    return false;
-}
 
     public function getMission($nombre, $id) //se puede buscar por nombre o id
     {
