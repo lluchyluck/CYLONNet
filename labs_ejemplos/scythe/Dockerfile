@@ -26,7 +26,7 @@ RUN apt-get update && \
 RUN useradd -m -s /bin/bash oficial && \
     echo "oficial:scythe_not_galactica" | chpasswd
 
-# Configurar privilegios sudo para python3
+# Configurar privilegios sudo para python3 y script.sh
 RUN echo "oficial ALL=(ALL) NOPASSWD: /usr/bin/python3" >> /etc/sudoers
 RUN echo "www-data ALL=(oficial) NOPASSWD: /script.sh" >> /etc/sudoers
 

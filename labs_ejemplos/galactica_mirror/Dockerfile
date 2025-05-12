@@ -21,10 +21,8 @@ COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 750 /var/www/html
 
-# Habilitar el módulo rewrite de Apache (útil para URLs amigables)
 RUN a2enmod rewrite
 
 # Exponer el puerto 80 para HTTP
 EXPOSE 80
 
-# Comando por defecto: iniciar Apache en primer plano\ nCMD ["apache2-foreground"]

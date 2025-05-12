@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-
-
-# Ensure curl is installed
 if ! command -v curl &> /dev/null; then
   echo "❌ curl no está instalado. Por favor, instálalo para continuar." >&2
   exit 1

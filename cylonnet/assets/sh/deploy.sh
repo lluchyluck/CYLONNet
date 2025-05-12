@@ -1,7 +1,5 @@
 #!/bin/bash
-# deploy-via-orchestrator.sh
 
-# Ensure required commands are available
 for cmd in curl jq; do
   if ! command -v $cmd &> /dev/null; then
     echo "Error: $cmd is not installed or not in PATH."

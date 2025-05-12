@@ -20,7 +20,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// ======== VULNERABILIDAD SQLi MEJORADA ========
+// ======== VULNERABILIDAD SQLi ========
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['page'])) {
     try {
         $username = $_POST['username'] ?? '';
@@ -46,17 +46,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['page'])) {
     }
 }
 
-// ======== PANEL ADMIN MEJORADO ========
+// ======== PANEL ADMIN ========
 if (isset($_GET['page']) && $_GET['page'] === 'admin') {
     if (!isset($_SESSION['admin'])) {
         die("<div class='alert'>¡Alerta! Navegación no autorizada<br>Error Code: CY7-0N3<br><a href='index.php'>Volver al login</a></div>");
     }
 
-    // ======== VULNERABILIDAD SUBIDA DE ARCHIVOS MEJORADA ========
+    // ======== VULNERABILIDAD SUBIDA DE ARCHIVOS ========
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['weapon_config'])) {
         $upload_dir = "uploads/";
 
-        // Crear directorio con permisos peligrosos
+        // Crear directorio con permisos 777 (vulnerable)
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0777, true);
         }
