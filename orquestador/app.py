@@ -179,5 +179,6 @@ def deploy():
 
     return jsonify({'status': 'ok', 'container': container.name, 'ip': ip, 'subdomain': subdomain}), 201
 
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000,debug=False)
+#esto para desarrollo
+#if __name__ == '__main__':
+#   app.run(host='0.0.0.0', port=8000,debug=False)
