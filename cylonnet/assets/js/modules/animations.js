@@ -1,6 +1,6 @@
 // animations.js
 
-// Función para animar el campo estelar
+// Función para animar el campo de estrellas
 function animateStarfield() {
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
@@ -78,8 +78,8 @@ function animateStarfield() {
 // Función para animar el texto aleatorio
 function startTextAnimation() {
   const targetText = "CYLONNet";
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_+[]{}|:',.?~`-=\\";
-  const textElement = document.querySelector("#animated-text h1"); // Selecciona el <h1> dentro del div
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_+[]{}|:,.?~`-=\\";
+  const textElement = document.querySelector("#animated-text h1"); 
 
   let iterations = 0;
 

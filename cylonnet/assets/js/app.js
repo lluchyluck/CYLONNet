@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function () { //esta funcion es la que inicia los javascipts de inicio
   let currentUser = null;
 
   // Importar funciones de otros módulos
