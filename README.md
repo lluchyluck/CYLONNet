@@ -23,13 +23,13 @@
 
 ## Descripción
 
-CYLONNet es una plataforma web que permite **lanzar, gestionar y puntuar desafíos de hacking** al estilo *Hack The Box* de forma totalmente autoservicio. El proyecto nace como Trabajo Fin de Grado de **Lucas Calzada del Pozo** para la Facultad de Informática (UCM).
+CYLONNet es una plataforma web que permite **lanzar y subir laboratorios de hacking** de forma totalmente autoservicio. El proyecto nace como Trabajo Fin de Grado de **Lucas Calzada del Pozo** para la Facultad de Informática (UCM).
 
-* **Frontend:** HTML5, CSS3, JavaScript, jQuery y Bootstrap.
-* **Backend:** PHP 8.x sobre Apache 2 y MariaDB.
+* **Frontend:** HTML5, CSS3, JavaScript, jQuery.
+* **Backend:** PHP 8.x sobre Nginx y MariaDB.
 * **Contenerización:** Docker (+ Docker Compose) con soporte multi‑arquitectura.
 
-La plataforma incluye un panel de administración, sistema de tags, XP, flags (*user* & *root*) y un completo manual interactivo que guía al estudiante durante sus primeras misiones.
+La plataforma incluye la gestion de usuarios, misiones, un panel de administración, sistema de tags, XP, flags (*user* & *root*) y un completo manual interactivo que guía al estudiante durante sus primeras misiones.
 
 ---
 
@@ -38,28 +38,26 @@ La plataforma incluye un panel de administración, sistema de tags, XP, flags (*
 * 💣 **Misiones bajo demanda** (lanzamiento, parada y destrucción automática de contenedores).
 * 🏆 **Sistema de puntuación** basado en XP y tags clasificatorios.
 * 🔑 **Flags estándar** (`/flag/uflag.txt`, `/root/rflag.txt`).
-* 📊 **Panel de analítica** para administradores (visitas, misiones activas, etc.).
-* 🛡️ **Autenticación UCM** (registro únicamente con correo institucional).
-* 🚀 **Soporte ARM/x86** (pensado para laboratorios con Raspberry Pi y servidores x86\_64).
+* 📊 **Panel de administracion** para administradores (añadir administradores, misiones, etc.).
+* 🚀 **Soporte de multiples arquitecturas** (Pensado para ejecutarse en cualquier entorno).
 
 ---
 
 ## Arquitectura del sistema
 
-```
-┌────────────┐       ┌─────────────────┐       ┌──────────────────────┐
-│  Frontend  │◀────▶│   PHP Backend   │◀────▶│   MariaDB Database   │
-└────────────┘       └─────────────────┘       └──────────────────────┘
-       ▲                    ▲                          ▲
-       │                    │                          │
-       │                    │   docker exec / API      │
-       ▼                    ▼                          ▼
-┌────────────────────────────────────────────────────────┐
-│                Docker Mission Cluster                 │
-└────────────────────────────────────────────────────────┘
-```
+La plataforma se compone de **cuatro bloques lógicos** comunicados por red interna Docker:
 
----
+| Bloque | Descripción | Puertos internos |
+|--------|-------------|------------------|
+| **Web** | NGINX actúa como *reverse-proxy* y termina TLS. Reenvía las peticiones a PHP-FPM, donde vive la aplicación CYLONNet. | `80/tcp` → NGINX → `9000/tcp` (FastCGI) |
+| **Base de datos** | Servidor MariaDB que almacena usuarios, misiones, tags, progreso y configuración. | `3306/tcp` |
+| **Orquestador Docker** | API REST escrita en Flask + Docker SDK. Recibe órdenes de `start_mission.php` y gestiona el ciclo de vida de los contenedores de laboratorio. | `8000/tcp` |
+| **Laboratorios (Misiones)** | Contenedores Docker aislados (`Lab1`, `Lab2`, …) que exponen cada reto en su propio subdominio. | Dinámicos (ej. `8080`, `8081`, …) |
+
+### Diagrama de flujo
+
+![Arquitectura CYLONNet](docs/diagrama.png)
+
 
 ## Requisitos
 
@@ -109,7 +107,7 @@ La primera compilación puede tardar varios minutos (dependiendo de la imagen ba
 | Archivo                       | Qué debo cambiar                                 |
 | ----------------------------- | ------------------------------------------------ |
 | `cylonnet/includes/app.php`   | **Contraseña de la base de datos** de producción |
-| `mariadb/initdb/CYLONNet.sql` | **Contraseña del usuario `admin` raíz** y *tags* |
+| `mariadb/initdb/CYLONNet.sql` | **Contraseña del usuario `cylon_adm` raíz** y *tags* |
 
 No subir nunca estas credenciales al repositorio público.
 
@@ -121,7 +119,7 @@ No subir nunca estas credenciales al repositorio público.
 2. Regístrate con tu **correo UCM** y establece una contraseña nueva.
 3. ¡Empieza tu primera misión!
 
-> Para acceso externo se recomienda VPN o red interna de la UCM.
+> Para acceso externo se recomienda VPN.
 
 ---
 
@@ -209,9 +207,7 @@ Este proyecto se publica bajo la licencia **MIT**. Consulta el archivo [LICENSE]
 
 ## Contacto
 
-* **Alumno/desarrollador:** Lucas Calzada del Pozo — [lucalzad@ucm.es](mailto:lucalzad@ucm.es)
-* **Tutor académico:** David Pacios — [dpacios@ucm.es](mailto:dpacios@ucm.es)
-* **Tutor académico:** José Luis Vázquez Poletti — [jlvazquez@fdi.ucm.es](mailto:jlvazquez@fdi.ucm.es)
+* **Desarrollador:** Lucas Calzada del Pozo — [lucalzad@ucm.es](mailto:lucalzad@ucm.es)
 
 ---
 
