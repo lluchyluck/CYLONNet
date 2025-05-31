@@ -58,19 +58,6 @@ La plataforma se compone de **cuatro bloques lógicos** comunicados por red inte
 
 ![Arquitectura CYLONNet](docs/diagrama.png)
 
-
-## Requisitos
-
-| Componente        | Versión mínima |
-| ----------------- | -------------- |
-| Docker Engine     | 24.0           |
-| Docker Compose v2 | 2.20           |
-| PHP               | 8.1            |
-| Apache            | 2.4            |
-| MariaDB           | 10.11          |
-
-> **Nota:** En entornos de producción se recomienda Linux 5.15 o superior.
-
 ---
 
 ## Instalación
