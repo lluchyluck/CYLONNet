@@ -2,6 +2,8 @@
 
 > Plataforma de laboratorios de ciberseguridad *CTF‑style* para la Universidad Complutense de Madrid.
 
+[Uploading Memoria_CylonNet.pdf…]()
+
 ---
 
 ## Tabla de contenidos
@@ -35,11 +37,11 @@ La plataforma incluye la gestion de usuarios, misiones, un panel de administraci
 
 ## Características principales
 
-* 💣 **Misiones bajo demanda** (lanzamiento, parada y destrucción automática de contenedores).
-* 🏆 **Sistema de puntuación** basado en XP y tags clasificatorios.
-* 🔑 **Flags estándar** (`/flag/uflag.txt`, `/root/rflag.txt`).
-* 📊 **Panel de administracion** para administradores (añadir administradores, misiones, etc.).
-* 🚀 **Soporte de multiples arquitecturas** (Pensado para ejecutarse en cualquier entorno).
+*  **Misiones bajo demanda** (lanzamiento, parada y destrucción automática de contenedores).
+*  **Sistema de puntuación** basado en XP y tags clasificatorios.
+*  **Flags estándar** (`/flag/uflag.txt`, `/root/rflag.txt`).
+*  **Panel de administracion** para administradores (añadir administradores, misiones, etc.).
+*  **Soporte de multiples arquitecturas** (Pensado para ejecutarse en cualquier entorno).
 
 ---
 
