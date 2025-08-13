@@ -1,8 +1,10 @@
-# CYLONNet
+# CylonNet
 
 > Plataforma de laboratorios de ciberseguridad *CTF‑style* para la Universidad Complutense de Madrid.
 
-[Memoria_CylonNet.pdf](https://github.com/user-attachments/files/21752233/Memoria_CylonNet.pdf)
+[![Documentación - Memoria CylonNet](portadamemoria.png)](https://github.com/user-attachments/files/21752233/Memoria_CylonNet.pdf)
+
+
 
 ---
 
@@ -30,6 +32,7 @@ CYLONNet es una plataforma web que permite **lanzar y subir laboratorios de hack
 * **Frontend:** HTML5, CSS3, JavaScript, jQuery.
 * **Backend:** PHP 8.x sobre Nginx y MariaDB.
 * **Contenerización:** Docker (+ Docker Compose) con soporte multi‑arquitectura.
+<img width="637" height="899" alt="portadamemoria" src="https://github.com/user-attachments/assets/7655b959-6bfe-40b1-9ecb-c08dc995eed8" />
 
 La plataforma incluye la gestion de usuarios, misiones, un panel de administración, sistema de tags, XP, flags (*user* & *root*) y un completo manual interactivo que guía al estudiante durante sus primeras misiones.
 
